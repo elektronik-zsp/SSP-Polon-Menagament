@@ -1,1 +1,2 @@
-bbe6c83a43d1dadbd4a57e476c256fd158b11c7f4ee9973ded8ac96ab522b8dc  SSP-Polon-Portable-Windows-x64.zip
+6ed2040a3322506c197770bf2b00b05e1f2452874651d4fcf4950993d4b588d6  SSP-Polon-Portable-Windows-x64.zip
+f26a84d314102bc366723638fc76b18d33c1926ad44cda0ed9d08b3e25a84661  SSP-Polon-Aktualizacja-2.0.zip
