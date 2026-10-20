@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Zarządzania Serwisem SSP - Polon 4000 / 6000</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --header-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --warning: #d97706;
+            --warning-bg: #fef3c7;
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+            --info: #0284c7;
+            --info-bg: #e0f2fe;
+            --border: #e2e8f0;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc; background-color: var(--bg-main);
+            color: #334155; color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Dark Slate Header */
+        header {
+            background-color: #0f172a; background-color: var(--header-bg);
+            color: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: white;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .logo-title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-title p {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .header-actions {
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Navigation Tabs Bar */
+        nav.main-nav {
+            background-color: #1e293b; background-color: var(--sidebar-bg);
+            padding: 0 24px;
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid #334155;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 12px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: #f1f5f9;
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .nav-tab.active {
+            color: #ffffff;
+            border-bottom-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* KPI Dashboard Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background-color: #ffffff; background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kpi-info h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #64748b; color: var(--text-muted);
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .kpi-info .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #334155; color: var(--text-main);
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .kpi-icon.blue { background-color: #e0f2fe; background-color: var(--info-bg); color: var(--info); }
+        .kpi-icon.red { background-color: #fee2e2; background-color: var(--danger-bg); color: var(--danger); }
+        .kpi-icon.amber { background-color: #fef3c7; background-color: var(--warning-bg); color: var(--warning); }
+        .kpi-icon.green { background-color: #dcfce7; background-color: var(--success-bg); color: var(--success); }
+
+        /* Dashboard Dual Layout */
+        .dash-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .dash-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Cards & Containers */
+        .panel-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Controls & Filters Bar */
+        .filter-bar {
+            background-color: #ffffff; background-color: var(--card-bg);
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b; color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        input[type="text"], input[type="date"], select, textarea {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.15s;
+            width: 100%;
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Date Input Wrapper with Custom Offline Calendar Trigger */
+        .date-input-wrapper {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .btn-cal {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.15s;
+        }
+
+        .btn-cal:hover {
+            background: #e2e8f0;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, transform 0.05s;
+            text-decoration: none;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: #2563eb; background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; background-color: var(--primary-hover); }
+        .btn-success { background-color: #16a34a; background-color: var(--success); color: white; }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-warning { background-color: #d97706; background-color: var(--warning); color: white; }
+        .btn-danger { background-color: #dc2626; background-color: var(--danger); color: white; }
+        .btn-secondary { background-color: #64748b; color: white; }
+        .btn-secondary:hover { background-color: #475569; }
+        .btn-outline { background-color: transparent; border: 1px solid #e2e8f0; border: 1px solid var(--border); color: #334155; color: var(--text-main); }
+        .btn-outline:hover { background-color: #f1f5f9; }
+        .btn-sm { padding: 4px 10px; font-size: 0.775rem; }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+            padding: 12px 14px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: #334155; color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover { background-color: #f8fafc; }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .badge-success { background-color: #dcfce7; background-color: var(--success-bg); color: #15803d; border: 1px solid #bbf7d0; }
+        .badge-warning { background-color: #fef3c7; background-color: var(--warning-bg); color: #b45309; border: 1px solid #fde68a; }
+        .badge-danger { background-color: #fee2e2; background-color: var(--danger-bg); color: #b91c1c; border: 1px solid #fca5a5; }
+        .badge-info { background-color: #e0f2fe; background-color: var(--info-bg); color: #0369a1; border: 1px solid #bae6fd; }
+
+        /* Clickable Cross-Link */
+        .panel-link {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .panel-link:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Technical Card 360 View */
+        .tech-card-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .tech-card-grid { grid-template-columns: 1fr; }
+        }
+
+        .tech-spec-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .tech-spec-item {
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .tech-spec-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .tech-spec-label {
+            font-size: 0.75rem;
+            color: #64748b; color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tech-spec-val {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #334155; color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        /* Modal Box System */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: #ffffff;
+            border-radius: 12px;
+            width: 94%;
+            max-width: 880px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+            border: 1px solid #cbd5e1;
+            animation: modalScaleIn 0.2s ease-out;
+        }
+
+        @keyframes modalScaleIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-body {
+            padding: 28px;
+            overflow-y: auto;
+            max-height: calc(90vh - 140px);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            background-color: #f8fafc;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group-full {
+            grid-column: span 2;
+        }
+
+        /* Offline Calendar Modal/Popup */
+        .calendar-popup {
+            position: absolute;
+            background: white;
+            border: 1px solid #e2e8f0; border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            padding: 12px;
+            z-index: 2000;
+            display: none;
+            width: 280px;
+        }
+
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .cal-day-name {
+            font-weight: bold;
+            color: #64748b; color: var(--text-muted);
+            padding: 4px 0;
+        }
+
+        .cal-day {
+            padding: 6px 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .cal-day:hover { background-color: #f1f5f9; }
+        .cal-day.selected { background-color: #2563eb; background-color: var(--primary); color: white; }
+        .cal-day.today { border: 1px solid var(--primary); }
+
+        footer {
+            margin-top: auto;
+            background-color: #f1f5f9;
+            padding: 12px 24px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #64748b; color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dark Slate Top Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">SSP</div>
+            <div class="logo-title">
+                <h1>Polon System Manager PRO</h1>
+                <p>System Zarządzania Serwisem & Konserwacją Central Sygnalizacji Pożarowej</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline" style="color: white; border-color: #475569;" onclick="exportDataJSON()">💾 Zapisz Kopię</button>
+            <button class="btn btn-outline" style="color: white; border-color: #475569;" onclick="triggerImportJSON()">📂 Wczytaj</button>
+            <button class="btn btn-outline" style="color: #fca5a5; border-color: #b91c1c;" onclick="resetToDefaults()">🔄 Reset Bazy</button>
+            <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="importDataJSON(event)">
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="main-nav">
+        <button class="nav-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+        <button class="nav-tab" onclick="switchTab('techcard')">💳 Karta Techniczna 360°</button>
+        <button class="nav-tab" onclick="switchTab('register')">📋 Rejestr Central & Harmonogram</button>
+        <button class="nav-tab" onclick="switchTab('helpdesk')">🚨 Helpdesk (Awarie)</button>
+        <button class="nav-tab" onclick="switchTab('history')">📜 Dziennik Prac & Historia</button>
+    </nav>
+
+    <!-- Main Container -->
+    <main>
+
+        <!-- 1. DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Flota Central</h3>
+                        <div class="kpi-value" id="kpi-total-panels">26</div>
+                    </div>
+                    <div class="kpi-icon blue">🔥</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Aktywne Awarie</h3>
+                        <div class="kpi-value" id="kpi-active-faults">0</div>
+                    </div>
+                    <div class="kpi-icon red">🚨</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Przeglądy Pilne / Po Terminie</h3>
+                        <div class="kpi-value" id="kpi-urgent-inspections">0</div>
+                    </div>
+                    <div class="kpi-icon amber">⏳</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Wpisy w Historii</h3>
+                        <div class="kpi-value" id="kpi-total-history">0</div>
+                    </div>
+                    <div class="kpi-icon green">📝</div>
+                </div>
+            </div>
+
+            <div class="dash-layout">
+                <!-- Active Faults Card -->
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <div class="panel-card-title">🚨 Najnowsze Otwarte Awarie</div>
+                        <button class="btn btn-sm btn-primary" onclick="openNewFaultModal()">+ Zgłoś Awarie</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 35px;">ID Awarii</th>
+                                    <th>Data</th>
+                                    <th>Centrala</th>
+                                    <th>Zgłaszający</th>
+                                    <th>Opis Usterki</th>
+                                    <th>Status</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody id="dash-faults-table">
+                                <!-- JS rendered -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Upcoming Inspections Card -->
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <div class="panel-card-title">⏳ Centrala Wymagające Przeglądu (Pilne/Po Terminie)</div>
+                        <button class="btn btn-sm btn-outline" onclick="switchTab('register')">Zobacz Wszystkie</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Kod</th>
+                                    <th>Model</th>
+                                    <th>Lokalizacja</th>
+                                    <th>Termin Przeglądu</th>
+                                    <th>Status</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody id="dash-inspections-table">
+                                <!-- JS rendered -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. KARTA TECHNICZNA 360 -->
+        <div id="tab-techcard" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-group" style="max-width: 320px;">
+                    <label for="techcard-select">Wybierz Centralę do Podglądu:</label>
+                    <select id="techcard-select" onchange="renderTechCard()">
+                        <!-- JS options -->
+                    </select>
+                </div>
+                <div style="margin-left: auto; display: flex; gap: 8px;">
+                    <button class="btn btn-success" onclick="executeInspectionForSelected()">✅ Wykonaj Przegląd</button>
+                    <button class="btn btn-danger" onclick="reportFaultForSelected()">🚨 Zgłoś Awarie</button>
+                    <button class="btn btn-outline" onclick="editSelectedPanel()">✏️ Edytuj Dane</button>
+                </div>
+            </div>
+
+            <div class="tech-card-grid">
+                <!-- Panel Specs Left Box -->
+                <div class="tech-spec-box" id="tech-card-specs">
+                    <!-- JS rendered -->
+                </div>
+
+                <!-- Panel Specific History Right Box -->
+                <div class="panel-card">
+                    <div class="panel-card-header">
+                        <div class="panel-card-title">📜 Dziennik Prac i Historia dla Wybranej Centrali</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Rodzaj Pracy</th>
+                                    <th>Wykonawca</th>
+                                    <th>Nr Protokołu</th>
+                                    <th>Wynik</th>
+                                    <th>Opis Prób / Prac</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tech-card-history">
+                                <!-- JS rendered -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. REJESTR CENTRAL & HARMONOGRAM -->
+        <div id="tab-register" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-group" style="flex: 2;">
+                    <label>Filtruj tabele (kod, model, lokalizacja, miejsce, S/N):</label>
+                    <input type="text" id="register-search" placeholder="Wpisz szukaną frazę..." oninput="renderRegister()">
+                </div>
+                <div class="filter-group">
+                    <label>Status terminowości:</label>
+                    <select id="register-status-filter" onchange="renderRegister()">
+                        <option value="">-- Wszystkie --</option>
+                        <option value="Po terminie">Po terminie</option>
+                        <option value="Pilny">Pilny (do 30 dni)</option>
+                        <option value="W terminie">W terminie</option>
+                    </select>
+                </div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-card-header">
+                    <div class="panel-card-title">📋 Ewidencja 26 Central SSP & Harmonogram Przeglądów</div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kod</th>
+                                <th>Model</th>
+                                <th>Lokalizacja</th>
+                                <th>Dokładne Miejsce</th>
+                                <th>Nr Seryjny</th>
+                                <th>Interwał</th>
+                                <th>Ostatni Przegląd</th>
+                                <th>Kolejny Przegląd</th>
+                                <th>Status Terminu</th>
+                                <th>Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="register-table">
+                            <!-- JS rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. HELPDESK (AWARIE) -->
+        <div id="tab-helpdesk" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Szukaj tekstem:</label>
+                    <input type="text" id="help-search-text" placeholder="Fraza opisu, zgłaszający..." oninput="renderHelpdesk()">
+                </div>
+                <div class="filter-group">
+                    <label>Centrala:</label>
+                    <select id="help-filter-panel" onchange="renderHelpdesk()">
+                        <option value="">-- Wszystkie --</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select id="help-filter-status" onchange="renderHelpdesk()">
+                        <option value="">-- Wszystkie --</option>
+                        <option value="Nowe">Nowe</option>
+                        <option value="W trakcie">W trakcie</option>
+                        <option value="Zamknięte">Zamknięte</option>
+                    </select>
+                </div>
+                <div style="margin-left: auto;">
+                    <button class="btn btn-primary" onclick="openNewFaultModal()">+ Zgłoś Nową Awarie</button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data Zgłoszenia</th>
+                                <th>Centrala</th>
+                                <th>Zgłaszający</th>
+                                <th>Opis Usterki</th>
+                                <th>Status</th>
+                            
+                            </tr>
+                        </thead>
+                        <tbody id="helpdesk-table">
+                            <!-- JS rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. HISTORIA SERWISOWA & DZIENNIK PRAC -->
+        <div id="tab-history" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Szukaj tekstem:</label>
+                    <input type="text" id="hist-search-text" placeholder="Opis, numer protokołu, wykonawca..." oninput="renderHistory()">
+                </div>
+                <div class="filter-group">
+                    <label>Centrala:</label>
+                    <select id="hist-filter-panel" onchange="renderHistory()">
+                        <option value="">-- Wszystkie --</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Rodzaj Pracy:</label>
+                    <select id="hist-filter-type" onchange="renderHistory()">
+                        <option value="">-- Wszystkie --</option>
+                        <option value="Przegląd">Przegląd</option>
+                        <option value="Naprawa">Naprawa</option>
+                        <option value="Konserwacja">Konserwacja</option>
+                        <option value="Wymiana akumulatorów/podzespołów">Wymiana akumulatorów/podzespołów</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Data Od:</label>
+                    <div class="date-input-wrapper">
+                        <input type="date" id="hist-date-from" onchange="renderHistory()">
+                        <button class="btn-cal" onclick="openOfflineCal('hist-date-from')">📅</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Data Do:</label>
+                    <div class="date-input-wrapper">
+                        <input type="date" id="hist-date-to" onchange="renderHistory()">
+                        <button class="btn-cal" onclick="openOfflineCal('hist-date-to')">📅</button>
+                    </div>
+                </div>
+                <div style="margin-left: auto;">
+                    <button class="btn btn-primary" onclick="openNewHistoryModal()">+ Dodaj Wpis do Dziennika</button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Centrala</th>
+                                <th>Rodzaj Pracy</th>
+                                <th>Wykonawca</th>
+                                <th>Nr Protokołu</th>
+                                <th>Wynik</th>
+                                <th>Opis Wykonanych Prac</th>
+                                <th>Zalecenia / Wymienione Części</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table">
+                            <!-- JS rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    
+    <!-- MODAL: Karta Awarii 360° z Historią Interwencji -->
+    <div id="modal-fault-card" class="modal-overlay">
+        <div class="modal" style="max-width: 950px;">
+            <div class="modal-header">
+                <h2>🚨 Karta Awarii: <span id="card-fault-id" style="color:var(--primary);">AWAR-101</span></h2>
+                <button class="btn btn-sm btn-outline" onclick="closeModal('modal-fault-card')">&#10006;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tech-card-grid" style="grid-template-columns: 320px 1fr;">
+                    <!-- Spec Box -->
+                    <div class="tech-spec-box" id="fault-card-specs">
+                        <!-- JS Rendered -->
+                    </div>
+                    <!-- Actions & History Box -->
+                    <div class="panel-card" style="margin-bottom:0;">
+                        <div class="panel-card-header">
+                            <div class="panel-card-title">📜 Dziennik Prac i Interwencji</div>
+                            <button class="btn btn-sm btn-success" id="btn-add-intervention" onclick="addInterventionFromCard()">+ Dodaj Działanie</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Wykonawca</th>
+                                        <th>Nr Protokołu</th>
+                                        <th>Wynik</th>
+                                        <th>Opis Wykonanych Prac</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fault-card-history-table">
+                                    <!-- JS Rendered -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:0.85rem; font-weight:600;">Status Awarii:</label>
+                    <select id="card-quick-status" onchange="changeFaultStatusFromCard()" style="width: auto; padding: 4px 8px;">
+                        <option value="Nowe">Nowe</option>
+                        <option value="W trakcie">W trakcie</option>
+                        <option value="Zamknięte">Zamknięte</option>
+                    </select>
+                </div>
+                <button class="btn btn-outline" onclick="closeModal('modal-fault-card')">Zamknij</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Zgłoś Awarie -->
+    <div id="modal-fault" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🚨 Zgłoszenie Usterki / Awarii SSP</h2>
+                <button class="btn btn-sm btn-outline" onclick="closeModal('modal-fault')">&#10006;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-fault">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Data Zgłoszenia:</label>
+                            <div class="date-input-wrapper">
+                                <input type="datetime-local" id="fault-date" required>
+                                <button type="button" class="btn-cal" onclick="openOfflineCal('fault-date')">📅</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Centrala:</label>
+                            <select id="fault-panel" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Zgłaszający:</label>
+                            <input type="text" id="fault-reporter" placeholder="Imię i nazwisko / Dział" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Status Initialny:</label>
+                            <select id="fault-status">
+                                <option value="Nowe">Nowe</option>
+                                <option value="W trakcie">W trakcie</option>
+                            </select>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Dokładny Opis Usterki / Objawy:</label>
+                            <textarea id="fault-desc" rows="3" required placeholder="Opisz usterkę (np. uszkodzona czujka w pętli 2, sygnał uszkodzenia zasilacza...)"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-fault')">Anuluj</button>
+                <button class="btn btn-danger" onclick="saveFault()">Zapisz Zgłoszenie</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Rozwiązanie Awarii -> Przenieś do Historii -->
+    <div id="modal-resolve" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>✅ Zamknięcie Awarii i Wpis do Dziennika Prac</h2>
+                <button class="btn btn-sm btn-outline" onclick="closeModal('modal-resolve')">&#10006;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-resolve">
+                    <input type="hidden" id="resolve-fault-id">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Data Usunięcia Awarii:</label>
+                            <div class="date-input-wrapper">
+                                <input type="datetime-local" id="resolve-date" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Centrala:</label>
+                            <input type="text" id="resolve-panel" readonly style="background:#f1f5f9;">
+                        </div>
+                        <div class="form-group">
+                            <label>Wykonawca Prac:</label>
+                            <select id="resolve-contractor" required onchange="toggleContractorInput('resolve')">
+                                <option value="Zakładowa Straż Pożarna" selected>Zakładowa Straż Pożarna (ZSP)</option>
+                                <option value="Serwis Zewnętrzny">Serwis Zewnętrzny</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="resolve-zsp-group">
+                            <label>Imię i nazwisko wykonującego (ZSP):</label>
+                            <input type="text" id="resolve-zsp-person" placeholder="Wpisz swoje dane(Imię i Nazwisko" value="">
+                        </div>
+                        <div class="form-group">
+                            <label>Numer Protokołu / Zlecenia:</label>
+                            <input type="text" id="resolve-protocol" required placeholder="np. PROT/2026/04/12">
+                        </div>
+                        <div class="form-group">
+                            <label>Wynik Interwencji / Pracy:</label>
+                            <select id="resolve-result" onchange="updateResolveTargetStatus()">
+                                <option value="Pozytywny">Pozytywny (Usterka usunięta)</option>
+                                <option value="Negatywny">Negatywny (Wymaga dalszych prac)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nowy Status Zgłoszenia Awarii:</label>
+                            <select id="resolve-target-status">
+                                <option value="Zamknięte">Zamknięte (Zakończone zgłoszenie)</option>
+                                <option value="W trakcie">W trakcie (Nadal wymaga prac)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Rodzaj Pracy:</label>
+                            <input type="text" id="resolve-type" value="Naprawa" readonly style="background:#f1f5f9;">
+                        </div>
+                        <div class="form-group-full">
+                            <label>Opis Wykonanych Prac Naprawczych:</label>
+                            <textarea id="resolve-desc" rows="3" required placeholder="Szczegóły podjętych działań..."></textarea>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Zalecenia / Wymienione Podzespoły:</label>
+                            <input type="text" id="resolve-recom" placeholder="np. Wymieniono czujkę czadu/dymu DUR-40, wyczyszczono pętlę">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-resolve')">Anuluj</button>
+                <button class="btn btn-success" onclick="saveResolution()">Przenieś do Historii & Zamknij Awarie</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Wykonaj Przegląd / Nowy Dziennik Prac -->
+    <div id="modal-history" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-history-title">📝 Rejestracja Wykonanych Prac / Przeglądu</h2>
+                <button class="btn btn-sm btn-outline" onclick="closeModal('modal-history')">&#10006;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-history">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Data Wykonania:</label>
+                            <div class="date-input-wrapper">
+                                <input type="datetime-local" id="hist-date" required>
+                            
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Centrala:</label>
+                            <select id="hist-panel" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Rodzaj Pracy:</label>
+                            <select id="hist-type" required>
+                                <option value="Przegląd">Przegląd Okresowy (Kwartalny/Roczny)</option>
+                                <option value="Naprawa">Naprawa / Usuwanie Awarii</option>
+                                <option value="Konserwacja">Konserwacja Profilaktyczna</option>
+                                <option value="Wymiana akumulatorów/podzespołów">Wymiana Akumulatorów / Podzespołów</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Wykonawca:</label>
+                            <select id="hist-contractor" required onchange="toggleContractorInput('hist')">
+                                <option value="Zakładowa Straż Pożarna" selected>Zakładowa Straż Pożarna (ZSP)</option>
+                                <option value="Serwis Zewnętrzny">Serwis Zewnętrzny</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="hist-zsp-group">
+                            <label>Imię i nazwisko wykonującego (ZSP):</label>
+                            <input type="text" id="hist-zsp-person" placeholder="Wpisz swoje dane Imię i Nazwisko" value="">
+                        </div>
+                        <div class="form-group">
+                            <label>Nr Protokołu / Zlecenia:</label>
+                            <input type="text" id="hist-protocol" placeholder="np. PRZ/2026/01/99" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Wynik Testów:</label>
+                            <select id="hist-result">
+                                <option value="Pozytywny">Pozytywny (Sprawna)</option>
+                                <option value="Negatywny">Negatywny (Wykryto Usterki)</option>
+                            </select>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Opis Wykonanych Prac / Zakres Testów:</label>
+                            <textarea id="hist-desc" rows="3" required placeholder="np. Przetestowano pętle 1-4, sprawdzono sprawność zasilania rezerwowego..."></textarea>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Zalecenia / Wymienione Części:</label>
+                            <input type="text" id="hist-recom" placeholder="np. Zalecana wymiana akumulatora w Q3 2026">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-history')">Anuluj</button>
+                <button class="btn btn-primary" onclick="saveHistoryRecord()">Zapisz Wpis</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edycja Centrali -->
+    <div id="modal-panel-edit" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>✏️ Edycja Parametrów Centrali SSP</h2>
+                <button class="btn btn-sm btn-outline" onclick="closeModal('modal-panel-edit')">&#10006;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-panel-edit">
+                    <input type="hidden" id="edit-panel-id">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Kod Centrali:</label>
+                            <input type="text" id="edit-panel-code" readonly style="background:#f1f5f9;">
+                        </div>
+                        <div class="form-group">
+                            <label>Model Centrali:</label>
+                            <select id="edit-panel-model">
+                                <option value="Polon 6000">Polon 6000</option>
+                                <option value="Polon 4000">Polon 4000</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lokalizacja (Obiekt):</label>
+                            <input type="text" id="edit-panel-loc" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dokładne Miejsce (Pomieszczenie):</label>
+                            <input type="text" id="edit-panel-spot" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Numer Seryjny:</label>
+                            <input type="text" id="edit-panel-sn" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Interwał Przeglądów (Miesiące):</label>
+                            <select id="edit-panel-interval">
+                                <option value="3">3 miesiące (Kwartalny)</option>
+                                <option value="6">6 miesięcy (Półroczny)</option>
+                                <option value="12">12 miesięcy (Roczny)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data Ostatniego Przeglądu:</label>
+                            <div class="date-input-wrapper">
+                                <input type="datetime-local" id="edit-panel-lastdate" required>
+                               
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Stan Techniczny:</label>
+                            <select id="edit-panel-condition">
+                                <option value="Sprawna">Sprawna</option>
+                                <option value="Wymaga serwisu">Wymaga serwisu</option>
+                                <option value="W trakcie naprawy">W trakcie naprawy</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-panel-edit')">Anuluj</button>
+                <button class="btn btn-primary" onclick="savePanelEdit()">Zapisz Zmiany</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Dynamic Popover Calendar -->
+    <div id="offline-calendar" class="calendar-popup">
+        <div class="cal-header">
+            <button class="btn btn-sm btn-outline" onclick="changeCalMonth(-1)">&#9664;</button>
+            <strong id="cal-month-year-label">Styczeń 2026</strong>
+            <button class="btn btn-sm btn-outline" onclick="changeCalMonth(1)">&#9654;</button>
+        </div>
+        <div class="cal-grid">
+            <div class="cal-day-name">Pn</div>
+            <div class="cal-day-name">Wt</div>
+            <div class="cal-day-name">Śr</div>
+            <div class="cal-day-name">Cz</div>
+            <div class="cal-day-name">Pt</div>
+            <div class="cal-day-name">Sb</div>
+            <div class="cal-day-name">Nd</div>
+        </div>
+        <div class="cal-grid" id="cal-days-container"></div>
+        <div style="margin-top: 8px; text-align: center;">
+            <button class="btn btn-sm btn-primary" style="width: 100%; justify-content: center;" onclick="selectCalToday()">Dzisiaj</button>
+        </div>
+    </div>
+
+    <footer>
+        System Zarządzania SSP Polon | ZSP Synthos | Copywright Arkadiusz Bartula
+    </footer>
+
+    <script>
+        // ==========================================
+        // ES5 / MSHTA POLYFILLS
+        // ==========================================
+        if (!Array.prototype.find) {
+            Array.prototype.find = function(predicate) {
+                if (this == null) throw new TypeError('Array.prototype.find called on null or undefined');
+                if (typeof predicate !== 'function') throw new TypeError('predicate must be a function');
+                var list = Object(this);
+                var length = list.length >>> 0;
+                var thisArg = arguments[1];
+                for (var i = 0; i < length; i++) {
+                    if (predicate.call(thisArg, list[i], i, list)) return list[i];
+                }
+                return undefined;
+            };
+        }
+
+        if (!String.prototype.padStart) {
+            String.prototype.padStart = function padStart(targetLength, padString) {
+                targetLength = targetLength >> 0;
+                padString = String(padString !== undefined ? padString : ' ');
+                if (this.length >= targetLength) {
+                    return String(this);
+                } else {
+                    targetLength = targetLength - this.length;
+                    if (targetLength > padString.length) {
+                        padString += padString.repeat(targetLength / padString.length);
+                    }
+                    return padString.slice(0, targetLength) + String(this);
+                }
+            };
+        }
+
+        if (!String.prototype.includes) {
+            String.prototype.includes = function(search, start) {
+                if (typeof start !== 'number') { start = 0; }
+                if (start + search.length > this.length) { return false; }
+                else { return this.indexOf(search, start) !== -1; }
+            };
+        }
+
+        // ==========================================
+        // DEFAULT DATA FLEET (26 PANELS POLON 4000/6000)
+        // ==========================================
+        var defaultPanels = [];
+        var locations = [
+            { loc: "Hala Produkcyjna H-01", spot: "Rozdzielnia Elektryczna 01" },
+            { loc: "Hala Produkcyjna H-02", spot: "Pomieszczenie Automatyków" },
+            { loc: "Hala Produkcyjna H-03", spot: "Dyspozytownia Główna" },
+            { loc: "Hala Produkcyjna H-04", spot: "Sterownia Linii 2" },
+            { loc: "Hala Produkcyjna H-05", spot: "Szatnia Pracownicza" },
+            { loc: "Magazyn Wyrobów Gotowych", spot: "Biuro Magazyniera" },
+            { loc: "Magazyn Surowców", spot: "Rampa Załadunkowa" },
+            { loc: "Biurowiec Główny - Parter", spot: "Portiernia Główna" },
+            { loc: "Biurowiec Główny - I Piętro", spot: "Serwerownia Główna" },
+            { loc: "Rozdzielnia Główna 110kV", spot: "Nastawnia RG" },
+            { loc: "Kotłownia Zakładowa", spot: "Pomieszczenie Obsługi" },
+            { loc: "Ładownia Wózków Widłowych", spot: "Korytarz Główny" },
+            { loc: "Stacja Uzdatniania Wody", spot: "Pomieszczenie Pomip" },
+            { loc: "Budynek ZSP", spot: "Stanowisko Kierowania ZSP" },
+            { loc: "Budynek Dyrekcji", spot: "Korytarz Centralny" },
+            { loc: "Kompresorownia", spot: "Maszynownia" },
+            { loc: "Magazyn Chemikaliów", spot: "Przedsionek Atestowany" },
+            { loc: "Laboratorium Jakości", spot: "Pokój Analiz" },
+            { loc: "Warsztat Mechaniczny", spot: "Biuro Mistrza" },
+            { loc: "Oczyszczalnia Ścieków", spot: "Sterownia Biologiczna" },
+            { loc: "Budynek Socjalny", spot: "Stołówka" },
+            { loc: "Magazyn Opakowań", spot: "Sektor B" },
+            { loc: "Węzeł Ciepłowniczy", spot: "Rozdzielacz" },
+            { loc: "Serwerownia Zapasowa", spot: "Pomieszczenie 104" },
+            { loc: "Aptteka Zakładowa / Ambulatorium", spot: "Gabinety" },
+            { loc: "Brama Wjazdowa Zachód", spot: "Dyżurka" }
+        ];
+
+        for (var i = 1; i <= 26; i++) {
+            var code = 'CSP-' + (i < 10 ? '0' + i : i);
+            var model = i <= 12 ? "Polon 6000" : "Polon 4000";
+            var locObj = locations[i - 1];
+            var monthsAgo = (i % 5);
+            var d = new Date();
+            d.setMonth(d.getMonth() - monthsAgo);
+            d.setDate(10 + (i % 15));
+            var lastInspection = d.toISOString().split('T')[0] + " 09:30";
+            
+            defaultPanels.push({
+                id: code,
+                model: model,
+                location: locObj.loc,
+                spot: locObj.spot,
+                serialNo: (model === "Polon 6000" ? "P6K-2023-" : "P4K-2022-") + (8000 + i * 37),
+                intervalMonths: i % 2 === 0 ? 3 : 6,
+                lastInspection: lastInspection,
+                condition: i === 4 || i === 11 ? "Wymaga serwisu" : "Sprawna"
+            });
+        }
+
+        var defaultFaults = [
+            {
+                id: "A-1",
+                date: "2026-04-10 08:15",
+                panelId: "CSP-04",
+                reporter: "M. Kowalski (Prod-H04)",
+                desc: "Uszkodzenie czujki w pętli dozorowej nr 2 (Strefa 12). Sygnał uszkodzenia na centrali.",
+                status: "W trakcie"
+            },
+            {
+                id: "AWAR-102",
+                date: "2026-04-18 14:20",
+                panelId: "CSP-11",
+                reporter: "Jan Nowak (ZSP)",
+                desc: "Błąd zasilania rezerwowego. Komunikat o braku ciągłości ładowania akumulatorów.",
+                status: "Nowe"
+            }
+        ];
+
+        var defaultHistory = [
+            {
+                id: "HIST-501",
+                date: "2026-01-15 11:00",
+                panelId: "CSP-01",
+                type: "Przegląd",
+                contractor: "Serwis",
+                protocolNo: "PRZ/2026/01/01",
+                result: "Pozytywny",
+                desc: "Wykonano przegląd kwartalny. Sprawdzono zadziałanie czujek dymu i ręcznych ostrzegaczy pożarowych (ROP). Centrala sprawna.",
+                recom: "Brak uwag. Kolejny przegląd zgodnie z harmonogramem."
+            },
+            {
+                id: "HIST-502",
+                date: "2026-02-20 09:45",
+                panelId: "CSP-04",
+                type: "Wymiana akumulatorów/podzespołów",
+                contractor: "ZSP",
+                protocolNo: "SERW/2026/02/14",
+                result: "Pozytywny",
+                desc: "Wymiana zużytych akumulatorów rezerwowych 12V 18Ah na nowe zestawy atestowane.",
+                recom: "Sprawdzono napięcie ładowania zasilacza buforowego."
+            }
+        ];
+
+        // Global State
+        var db = {
+            panels: [],
+            faults: [],
+            history: []
+        };
+
+        // ==========================================
+        // FileSystemObject (FSO) - HTA LOCAL PERSISTENCE
+        // ==========================================
+        var dbRevision = null;
+        var persistedDB = null;
+        function api(method, data) {
+            var request = new XMLHttpRequest();
+            request.open(method, '/api/database', false);
+            request.setRequestHeader('X-SSP-Client', 'local');
+            if (data !== undefined) request.setRequestHeader('Content-Type', 'application/json');
+            request.send(data === undefined ? null : JSON.stringify(data));
+            var response;
+            try { response = JSON.parse(request.responseText); }
+            catch (e) { throw new Error('Brak odpowiedzi serwera. Sprawdź okno programu Uruchom.bat.'); }
+            if (request.status !== 200) throw new Error(response.error || 'Błąd zapisu bazy');
+            return response;
+        }
+        function saveDB() {
+            try {
+                var result = api('PUT', {revision: dbRevision, database: db});
+                dbRevision = result.revision;
+                persistedDB = JSON.stringify(db);
+                updateStorageStatusIndicator();
+            } catch (error) {
+                if (persistedDB !== null) db = JSON.parse(persistedDB);
+                document.querySelector('footer').textContent = 'NIE ZAPISANO ZMIAN: ' + error.message;
+                alert('Nie zapisano zmian. ' + error.message + '\nOdśwież stronę przed dalszą pracą.');
+                throw error;
+            }
+        }
+        function updateStorageStatusIndicator() {
+            document.querySelector('footer').textContent = 'System Zarządzania SSP Polon | Offline | Baza zapisana w folderze aplikacji';
+        }
+        function initApp() {
+            try {
+                var result = api('GET');
+                dbRevision = result.revision;
+                db = result.database;
+                if (db === null) {
+                    db = {panels: [], faults: [], history: []};
+                    if (confirm('Brak pliku bazy. Czy rozpocząć od danych demonstracyjnych (26 central)? Wybierz Anuluj, aby utworzyć pustą bazę lub zaimportować własne dane.')) {
+                        db = {panels: defaultPanels, faults: defaultFaults, history: defaultHistory};
+                    }
+                    saveDB();
+                }
+                persistedDB = JSON.stringify(db);
+                populateDropdowns();
+                renderDashboard();
+                renderTechCard();
+                renderRegister();
+                renderHelpdesk();
+                renderHistory();
+                updateStorageStatusIndicator();
+            } catch (error) {
+                document.body.innerHTML = '';
+                var message = document.createElement('p');
+                message.style.cssText = 'padding:40px; font:20px sans-serif; color:#b91c1c';
+                message.textContent = 'Nie można otworzyć bazy. Uruchom aplikację przez Uruchom.bat. ' + error.message;
+                document.body.appendChild(message);
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm("Czy na pewno chcesz przywrócić domyślną flotę 26 central oraz dane początkowe?")) {
+                db = { panels: defaultPanels, faults: defaultFaults, history: defaultHistory };
+                saveDB();
+                populateDropdowns();
+                renderDashboard();
+                renderTechCard();
+                renderRegister();
+                renderHelpdesk();
+                renderHistory();
+                alert("Przywrócono domyślną bazę central!");
+            }
+        }
+        function exportDataJSON() {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            var dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", 'SSP_Polon_Baza_' + (new Date().toISOString().split('T')[0]) + '.json');
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function triggerImportJSON() {
+            document.getElementById('jsonFileInput').click();
+        }
+
+        function importDataJSON(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var imported = JSON.parse(e.target.result);
+                    if (imported.panels && imported.faults && imported.history) {
+                        db = imported;
+                        saveDB();
+                        populateDropdowns();
+                        renderDashboard();
+                        renderTechCard();
+                        renderRegister();
+                        renderHelpdesk();
+                        renderHistory();
+                        alert("Baza danych została pomyślnie wczytana!");
+                    } else {
+                        alert("Błąd: Plik nie zawiera prawidłowej struktury bazy danych SSP!");
+                    }
+                } catch(err) {
+                    alert("Nieprawidłowy plik JSON!");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Helper Date Calculations
+        function getNextInspectionDate(lastDateStr, intervalMonths) {
+            if (!lastDateStr) return "-";
+            var d = new Date(lastDateStr);
+            d.setMonth(d.getMonth() + parseInt(intervalMonths));
+            return d.toISOString().split('T')[0];
+        }
+
+        function getInspectionStatus(nextDateStr) {
+            if (!nextDateStr || nextDateStr === "-") return { text: "Brak daty", badge: "badge-secondary", days: 0 };
+            var today = new Date();
+            today.setHours(0,0,0,0);
+            var target = new Date(nextDateStr);
+            target.setHours(0,0,0,0);
+            
+            var diffTime = target - today;
+            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                return { text: 'Po terminie (' + Math.abs(diffDays) + ' dni)', badge: "badge-danger", days: diffDays };
+            } else if (diffDays <= 30) {
+                return { text: 'Pilny (' + diffDays + ' dni)', badge: "badge-warning", days: diffDays };
+            } else {
+                return { text: "W terminie", badge: "badge-success", days: diffDays };
+            }
+        }
+
+        // Navigation Tabs
+        function switchTab(tabId) {
+            var tabs = document.querySelectorAll('.nav-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            var contents = document.querySelectorAll('.tab-content');
+            for (var j = 0; j < contents.length; j++) {
+                contents[j].classList.remove('active');
+            }
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            var targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.add('active');
+
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'techcard') renderTechCard();
+            if (tabId === 'register') renderRegister();
+            if (tabId === 'helpdesk') renderHelpdesk();
+            if (tabId === 'history') renderHistory();
+        }
+
+        function openPanel360(panelId) {
+            document.getElementById('techcard-select').value = panelId;
+            var tabs = document.querySelectorAll('.nav-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                if (tabs[i].innerText.indexOf('Karta Techniczna') !== -1) {
+                    tabs[i].classList.add('active');
+                } else {
+                    tabs[i].classList.remove('active');
+                }
+            }
+            var contents = document.querySelectorAll('.tab-content');
+            for (var j = 0; j < contents.length; j++) {
+                contents[j].classList.remove('active');
+            }
+            document.getElementById('tab-techcard').classList.add('active');
+            renderTechCard();
+        }
+
+        // Dropdowns
+        function populateDropdowns() {
+            var selects = ['techcard-select', 'fault-panel', 'help-filter-panel', 'hist-filter-panel', 'hist-panel'];
+            for (var k = 0; k < selects.length; k++) {
+                var id = selects[k];
+                var sel = document.getElementById(id);
+                if (!sel) continue;
+                var currentVal = sel.value;
+                if (id.indexOf('filter') !== -1) {
+                    sel.innerHTML = '<option value="">-- Wszystkie Centrala --</option>';
+                } else {
+                    sel.innerHTML = '';
+                }
+                db.panels.forEach(function(p) {
+                    var opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.innerText = p.id + ' - ' + p.model + ' (' + p.location + ')';
+                    sel.appendChild(opt);
+                });
+                if (currentVal) sel.value = currentVal;
+            }
+        }
+
+        // ==========================================
+        // 1. DASHBOARD RENDER (FIXED TABLE COLUMNS)
+        // ==========================================
+        function renderDashboard() {
+            document.getElementById('kpi-total-panels').innerText = db.panels.length;
+            
+            var activeFaults = db.faults.filter(function(f) { return f.status !== 'Zamknięte'; });
+            document.getElementById('kpi-active-faults').innerText = activeFaults.length;
+
+            var urgentCount = 0;
+            db.panels.forEach(function(p) {
+                var nextDate = getNextInspectionDate(p.lastInspection, p.intervalMonths);
+                var st = getInspectionStatus(nextDate);
+                if (st.days <= 30) urgentCount++;
+            });
+            document.getElementById('kpi-urgent-inspections').innerText = urgentCount;
+            document.getElementById('kpi-total-history').innerText = db.history.length;
+
+            // Render Active Faults Table (7 columns matching header!)
+            var faultsTbody = document.getElementById('dash-faults-table');
+            faultsTbody.innerHTML = '';
+            if (activeFaults.length === 0) {
+                faultsTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Brak aktywnych usterek. Wszystkie systemy sprawne!</td></tr>';
+            } else {
+                activeFaults.forEach(function(f) {
+                    var badgeClass = f.status === 'Nowe' ? 'badge-danger' : 'badge-warning';
+                    faultsTbody.innerHTML += '<tr>' +
+                        '<td><span class="panel-link" onclick="openFaultCard(\'' + f.id + '\')">' + f.id + '</span></td>' +
+                        '<td>' + f.date + '</td>' +
+                        '<td><span class="panel-link" onclick="openPanel360(\'' + f.panelId + '\')">' + f.panelId + '</span></td>' +
+                        '<td>' + f.reporter + '</td>' +
+                        '<td>' + f.desc + '</td>' +
+                        '<td><span class="badge ' + badgeClass + '">' + f.status + '</span></td>' +
+                        '</tr>';
+                });
+            }
+
+            // Render Urgent Inspections Table (6 columns)
+            var insTbody = document.getElementById('dash-inspections-table');
+            insTbody.innerHTML = '';
+            var urgentPanels = db.panels.map(function(p) {
+                var nextDate = getNextInspectionDate(p.lastInspection, p.intervalMonths);
+                var status = getInspectionStatus(nextDate);
+                var item = {};
+                for (var key in p) { item[key] = p[key]; }
+                item.nextDate = nextDate;
+                item.status = status;
+                return item;
+            }).filter(function(p) { return p.status.days <= 30; })
+              .sort(function(a, b) { return a.status.days - b.status.days; });
+
+            if (urgentPanels.length === 0) {
+                insTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Brak pilnych przeglądów w ciągu najbliższych 30 dni.</td></tr>';
+            } else {
+                urgentPanels.slice(0, 5).forEach(function(p) {
+                    insTbody.innerHTML += '<tr>' +
+                        '<td><span class="panel-link" onclick="openPanel360(\'' + p.id + '\')">' + p.id + '</span></td>' +
+                        '<td>' + p.model + '</td>' +
+                        '<td>' + p.location + '</td>' +
+                        '<td>' + p.nextDate + '</td>' +
+                        '<td><span class="badge ' + p.status.badge + '">' + p.status.text + '</span></td>' +
+                        '<td><button class="btn btn-sm btn-primary" onclick="quickInspection(\'' + p.id + '\')">Wykonaj Przegląd</button></td>' +
+                        '</tr>';
+                });
+            }
+        }
+
+        // ==========================================
+        // 2. KARTA TECHNICZNA 360 RENDER
+        // ==========================================
+        var currentCardFaultId = null;
+
+        function renderTechCard() {
+            var selectedId = document.getElementById('techcard-select').value || (db.panels[0] ? db.panels[0].id : '');
+            var panel = db.panels.find(function(p) { return p.id === selectedId; });
+            if (!panel) return;
+
+            var nextDate = getNextInspectionDate(panel.lastInspection, panel.intervalMonths);
+            var status = getInspectionStatus(nextDate);
+
+            var specBox = document.getElementById('tech-card-specs');
+            specBox.innerHTML = 
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Kod Centrali</div>' +
+                    '<div class="tech-spec-val" style="font-size:1.4rem; color:var(--primary);">' + panel.id + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Model Sygnalizacji Pożarowej</div>' +
+                    '<div class="tech-spec-val">' + panel.model + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Lokalizacja Obiektowa</div>' +
+                    '<div class="tech-spec-val">' + panel.location + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Dokładne Miejsce Montażu</div>' +
+                    '<div class="tech-spec-val">' + panel.spot + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Numer Seryjny (S/N)</div>' +
+                    '<div class="tech-spec-val">' + panel.serialNo + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Interwał Konserwacji</div>' +
+                    '<div class="tech-spec-val">Co ' + panel.intervalMonths + ' miesięcy</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Data Ostatniego Przeglądu</div>' +
+                    '<div class="tech-spec-val">' + panel.lastInspection + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Data Kolejnego Przeglądu</div>' +
+                    '<div class="tech-spec-val">' + nextDate + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Status Terminowości</div>' +
+                    '<div class="tech-spec-val"><span class="badge ' + status.badge + '">' + status.text + '</span></div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Stan Techniczny Urządzenia</div>' +
+                    '<div class="tech-spec-val">' + panel.condition + '</div>' +
+                '</div>';
+
+            var histTbody = document.getElementById('tech-card-history');
+            histTbody.innerHTML = '';
+            var panelHist = db.history.filter(function(h) { return h.panelId === panel.id; }).sort(function(a, b) { return b.date.localeCompare(a.date); });
+            if (panelHist.length === 0) {
+                histTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Brak historii wpisów dla tej centrali.</td></tr>';
+            } else {
+                panelHist.forEach(function(h) {
+                    var resBadge = h.result === 'Pozytywny' ? 'badge-success' : 'badge-danger';
+                    histTbody.innerHTML += '<tr>' +
+                        '<td>' + h.date + '</td>' +
+                        '<td><strong>' + h.type + '</strong></td>' +
+                        '<td>' + h.contractor + '</td>' +
+                        '<td>' + h.protocolNo + '</td>' +
+                        '<td><span class="badge ' + resBadge + '">' + h.result + '</span></td>' +
+                        '<td>' + h.desc + '</td>' +
+                        '</tr>';
+                });
+            }
+        }
+
+        // ==========================================
+        // 3. REJESTR CENTRAL RENDER
+        // ==========================================
+        function renderRegister() {
+            var tbody = document.getElementById('register-table');
+            tbody.innerHTML = '';
+            db.panels.forEach(function(p) {
+                var nextDate = getNextInspectionDate(p.lastInspection, p.intervalMonths);
+                var status = getInspectionStatus(nextDate);
+                tbody.innerHTML += '<tr>' +
+                    '<td><span class="panel-link" onclick="openPanel360(\'' + p.id + '\')">' + p.id + '</span></td>' +
+                    '<td><strong>' + p.model + '</strong></td>' +
+                    '<td>' + p.location + '</td>' +
+                    '<td>' + p.spot + '</td>' +
+                    '<td><code>' + p.serialNo + '</code></td>' +
+                    '<td>co ' + p.intervalMonths + ' m-cy</td>' +
+                    '<td>' + p.lastInspection + '</td>' +
+                    '<td>' + nextDate + '</td>' +
+                    '<td><span class="badge ' + status.badge + '">' + status.text + '</span></td>' +
+                    '<td>' +
+                        '<button class="btn btn-sm btn-outline" onclick="openPanelEditModal(\'' + p.id + '\')">✏️ Edytuj</button> ' +
+                        '<button class="btn btn-sm btn-primary" onclick="quickInspection(\'' + p.id + '\')">Przegląd</button>' +
+                    '</td>' +
+                    '</tr>';
+            });
+        }
+
+        // ==========================================
+        // 4. HELPDESK RENDER
+        // ==========================================
+        function renderHelpdesk() {
+            var searchText = document.getElementById('help-search-text').value.toLowerCase();
+            var filterPanel = document.getElementById('help-filter-panel').value;
+            var filterStatus = document.getElementById('help-filter-status').value;
+
+            var tbody = document.getElementById('helpdesk-table');
+            tbody.innerHTML = '';
+
+            var filtered = db.faults.filter(function(f) {
+                var matchesText = f.desc.toLowerCase().indexOf(searchText) !== -1 || 
+                                  f.reporter.toLowerCase().indexOf(searchText) !== -1 || 
+                                  f.id.toLowerCase().indexOf(searchText) !== -1;
+                var matchesPanel = !filterPanel || f.panelId === filterPanel;
+                var matchesStatus = !filterStatus || f.status === filterStatus;
+                return matchesText && matchesPanel && matchesStatus;
+            }).sort(function(a, b) { return b.id.localeCompare(a.id); });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Brak zgłoszeń spełniających kryteria.</td></tr>';
+            } else {
+                filtered.forEach(function(f) {
+                    var badgeClass = 'badge-info';
+                    if (f.status === 'Nowe') badgeClass = 'badge-danger';
+                    if (f.status === 'W trakcie') badgeClass = 'badge-warning';
+                    if (f.status === 'Zamknięte') badgeClass = 'badge-success';
+
+                    var actionBtn = (f.status !== 'Zamknięte') ? 
+                        '<button class="btn btn-sm btn-success" onclick="openResolveModal(\'' + f.id + '\')">Rozwiązano -&gt; Przenieś do historii</button>' : 
+                        '<span style="color:var(--text-muted); font-size:0.8rem;">Zamknięte</span>';
+
+                    tbody.innerHTML += '<tr>' +
+                        '<td><span class="panel-link" onclick="openFaultCard(\'' + f.id + '\')">' + f.id + '</span></td>' +
+                        '<td>' + f.date + '</td>' +
+                        '<td><span class="panel-link" onclick="openPanel360(\'' + f.panelId + '\')">' + f.panelId + '</span></td>' +
+                        '<td>' + f.reporter + '</td>' +
+                        '<td>' + f.desc + '</td>' +
+                        '<td><span class="badge ' + badgeClass + '">' + f.status + '</span></td>' +
+                        
+                        '</tr>';
+                });
+            }
+        }
+
+        // ==========================================
+        // 5. HISTORIA RENDER
+        // ==========================================
+        function renderHistory() {
+            var searchText = document.getElementById('hist-search-text').value.toLowerCase();
+            var filterPanel = document.getElementById('hist-filter-panel').value;
+            var filterType = document.getElementById('hist-filter-type').value;
+            var dateFrom = document.getElementById('hist-date-from').value;
+            var dateTo = document.getElementById('hist-date-to').value;
+
+            var tbody = document.getElementById('history-table');
+            tbody.innerHTML = '';
+
+            var filtered = db.history.filter(function(h) {
+                var matchesText = h.desc.toLowerCase().indexOf(searchText) !== -1 || 
+                                  h.contractor.toLowerCase().indexOf(searchText) !== -1 || 
+                                  h.protocolNo.toLowerCase().indexOf(searchText) !== -1;
+                var matchesPanel = !filterPanel || h.panelId === filterPanel;
+                var matchesType = !filterType || h.type === filterType;
+                var matchesFrom = !dateFrom || h.date >= dateFrom;
+                var matchesTo = !dateTo || h.date <= dateTo;
+                return matchesText && matchesPanel && matchesType && matchesFrom && matchesTo;
+            }).sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Brak wpisów w historii dla podanych filtrów.</td></tr>';
+            } else {
+                filtered.forEach(function(h) {
+                    var resBadge = h.result === 'Pozytywny' ? 'badge-success' : 'badge-danger';
+                    tbody.innerHTML += '<tr>' +
+                        '<td>' + h.date + '</td>' +
+                        '<td><span class="panel-link" onclick="openPanel360(\'' + h.panelId + '\')">' + h.panelId + '</span></td>' +
+                        '<td><strong>' + h.type + '</strong></td>' +
+                        '<td>' + h.contractor + '</td>' +
+                        '<td><code>' + h.protocolNo + '</code></td>' +
+                        '<td><span class="badge ' + resBadge + '">' + h.result + '</span></td>' +
+                        '<td>' + h.desc + '</td>' +
+                        '<td>' + (h.recom || '-') + '</td>' +
+                        '</tr>';
+                });
+            }
+        }
+
+        // ==========================================
+        // MODAL KARTA AWARII 360°
+        // ==========================================
+        function openFaultCard(faultId) {
+            var fault = db.faults.find(function(f) { return f.id === faultId; });
+            if (!fault) return;
+
+            currentCardFaultId = faultId;
+            document.getElementById('card-fault-id').innerText = fault.id;
+
+            var panel = db.panels.find(function(p) { return p.id === fault.panelId; });
+            var panelLoc = panel ? (panel.location + ' (' + panel.spot + ')') : 'Nieokreślona';
+
+            var badgeClass = 'badge-info';
+            if (fault.status === 'Nowe') badgeClass = 'badge-danger';
+            if (fault.status === 'W trakcie') badgeClass = 'badge-warning';
+            if (fault.status === 'Zamknięte') badgeClass = 'badge-success';
+
+            document.getElementById('fault-card-specs').innerHTML = 
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">ID Zgłoszenia Awarii</div>' +
+                    '<div class="tech-spec-val" style="font-size:1.3rem; color:var(--danger);">' + fault.id + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Data Zgłoszenia</div>' +
+                    '<div class="tech-spec-val">' + fault.date + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Dotyczy Centrali</div>' +
+                    '<div class="tech-spec-val">' +
+                        '<span class="panel-link" onclick="closeModal(\'modal-fault-card\'); openPanel360(\'' + fault.panelId + '\');">' + fault.panelId + '</span>' +
+                        '<span style="font-size:0.8rem; color:var(--text-muted); display:block;">' + (panel ? panel.model : '') + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Lokalizacja Obiektowa</div>' +
+                    '<div class="tech-spec-val">' + panelLoc + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Zgłaszający</div>' +
+                    '<div class="tech-spec-val">' + fault.reporter + '</div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Status Awarii</div>' +
+                    '<div class="tech-spec-val"><span class="badge ' + badgeClass + '">' + fault.status + '</span></div>' +
+                '</div>' +
+                '<div class="tech-spec-item">' +
+                    '<div class="tech-spec-label">Opis Usterki / Objawy</div>' +
+                    '<div class="tech-spec-val" style="font-weight:normal; font-size:0.875rem;">' + fault.desc + '</div>' +
+                '</div>';
+
+            document.getElementById('card-quick-status').value = fault.status;
+
+            var historyTable = document.getElementById('fault-card-history-table');
+            historyTable.innerHTML = '';
+
+            var faultHistory = db.history.filter(function(h) { 
+                return h.faultId === fault.id || (h.panelId === fault.panelId && h.type === 'Naprawa' && h.date >= fault.date); 
+            });
+
+            if (faultHistory.length === 0) {
+                historyTable.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Brak zarejestrowanych interwencji serwisowych.</td></tr>';
+            } else {
+                faultHistory.forEach(function(h) {
+                    var resBadge = h.result === 'Pozytywny' ? 'badge-success' : 'badge-danger';
+                    var resText = h.result === 'Pozytywny' ? 'Usunięto' : 'Wymaga prac';
+                    historyTable.innerHTML += '<tr>' +
+                        '<td>' + h.date + '</td>' +
+                        '<td>' + h.contractor + '</td>' +
+                        '<td><code>' + h.protocolNo + '</code></td>' +
+                        '<td><span class="badge ' + resBadge + '">' + resText + '</span></td>' +
+                        '<td>' + h.desc + '</td>' +
+                        '</tr>';
+                });
+            }
+
+            document.getElementById('modal-fault-card').classList.add('active');
+        }
+
+        function changeFaultStatusFromCard() {
+            if (!currentCardFaultId) return;
+            var fault = db.faults.find(function(f) { return f.id === currentCardFaultId; });
+            if (!fault) return;
+
+            fault.status = document.getElementById('card-quick-status').value;
+            saveDB();
+            openFaultCard(currentCardFaultId);
+            renderDashboard();
+            renderHelpdesk();
+        }
+
+        function addInterventionFromCard() {
+            if (!currentCardFaultId) return;
+            closeModal('modal-fault-card');
+            openResolveModal(currentCardFaultId);
+        }
+
+        function updateResolveTargetStatus() {
+            var res = document.getElementById('resolve-result').value;
+            var targetSel = document.getElementById('resolve-target-status');
+            if (res === 'Pozytywny') {
+                targetSel.value = 'Zamknięte';
+            } else {
+                targetSel.value = 'W trakcie';
+            }
+        }
+
+        // ==========================================
+        // MODAL & ACTION HANDLERS
+        // ==========================================
+        function closeModal(modalId) {
+            var el = document.getElementById(modalId);
+            if (el) el.classList.remove('active');
+        }
+
+        function openNewFaultModal() {
+            document.getElementById('fault-date').value = new Date().toISOString().substring(0, 16);
+            document.getElementById('fault-reporter').value = '';
+            document.getElementById('fault-desc').value = '';
+            document.getElementById('modal-fault').classList.add('active');
+        }
+
+        function reportFaultForSelected() {
+            var selectedId = document.getElementById('techcard-select').value;
+            openNewFaultModal();
+            document.getElementById('fault-panel').value = selectedId;
+        }
+
+        function saveFault() {
+            var date = (document.getElementById('fault-date').value || "").replace("T", " ");
+            var panelId = document.getElementById('fault-panel').value;
+            var reporter = document.getElementById('fault-reporter').value;
+            var desc = document.getElementById('fault-desc').value;
+            var status = document.getElementById('fault-status').value;
+
+            if (!date || !panelId || !reporter || !desc) {
+                alert("Wypełnij wszystkie wymagane pola formularza!");
+                return;
+            }
+
+            var newFault = {
+                id: 'A-' + (1 + db.faults.length + 1),
+                date: date,
+                panelId: panelId,
+                reporter: reporter,
+                desc: desc,
+                status: status
+            };
+
+            db.faults.push(newFault);
+            saveDB(); // Instant Save to disk
+            closeModal('modal-fault');
+            renderDashboard();
+            renderHelpdesk();
+            alert("Usterka została zarejestrowana!");
+        }
+
+        function openResolveModal(faultId) {
+            var fault = db.faults.find(function(f) { return f.id === faultId; });
+            if (!fault) return;
+
+            document.getElementById('resolve-fault-id').value = fault.id;
+            document.getElementById('resolve-contractor').value = 'Zakładowa Straż Pożarna';
+            document.getElementById('resolve-zsp-person').value = '';
+            toggleContractorInput('resolve');
+            document.getElementById('resolve-date').value = new Date().toISOString().substring(0, 16);
+            document.getElementById('resolve-panel').value = fault.panelId;
+            document.getElementById('resolve-protocol').value = 'PROT/' + (new Date().getFullYear()) + '/' + (db.history.length + 1);
+            document.getElementById('resolve-desc').value = 'Interwencja dotycząca usterki "' + fault.desc + '". Zgłaszający: ' + fault.reporter + '.';
+            document.getElementById('resolve-recom').value = '';
+            
+            document.getElementById('resolve-result').value = 'Pozytywny';
+            updateResolveTargetStatus();
+
+            document.getElementById('modal-resolve').classList.add('active');
+        }
+
+        function saveResolution() {
+            var faultId = document.getElementById('resolve-fault-id').value;
+            var fault = db.faults.find(function(f) { return f.id === faultId; });
+            if (!fault) return;
+
+            var date = (document.getElementById('resolve-date').value || "").replace("T", " ");
+            var contractorType = document.getElementById('resolve-contractor').value;
+            var contractor = contractorType;
+            if (contractorType === 'Zakładowa Straż Pożarna') {
+                var person = document.getElementById('resolve-zsp-person').value.trim();
+                contractor = person ? 'ZSP: ' + person : 'Zakładowa Straż Pożarna';
+            }
+            var protocolNo = document.getElementById('resolve-protocol').value;
+            var result = document.getElementById('resolve-result').value;
+            var targetStatus = document.getElementById('resolve-target-status').value;
+            var desc = document.getElementById('resolve-desc').value;
+            var recom = document.getElementById('resolve-recom').value;
+
+            if (!date || !protocolNo || !desc) {
+                alert("Wypełnij wymagane pola!");
+                return;
+            }
+
+            fault.status = targetStatus;
+
+            var newHistory = {
+                id: 'HIST-' + (500 + db.history.length + 1),
+                date: date,
+                panelId: fault.panelId,
+                faultId: fault.id,
+                type: 'Naprawa',
+                contractor: contractor,
+                protocolNo: protocolNo,
+                result: result,
+                desc: desc,
+                recom: recom
+            };
+            db.history.push(newHistory);
+
+            saveDB(); // Instant Save to disk
+            closeModal('modal-resolve');
+            renderDashboard();
+            renderHelpdesk();
+            renderHistory();
+            renderTechCard();
+            
+            if (targetStatus === 'Zamknięte') {
+                alert("Awaria została pomyślnie usunięta i ZAMKNIĘTA!");
+            } else {
+                alert("Wpis interwencji dodany. Zgłoszenie awarii pozostaje OTWARTE!");
+            }
+        }
+
+        function openNewHistoryModal() {
+            document.getElementById('hist-date').value = new Date().toISOString().substring(0, 16);
+            document.getElementById('hist-contractor').value = 'Zakładowa Straż Pożarna';
+            document.getElementById('hist-zsp-person').value = '';
+            toggleContractorInput('hist');
+            document.getElementById('hist-protocol').value = 'PRZ/' + (new Date().getFullYear()) + '/' + (db.history.length + 1);
+            document.getElementById('hist-desc').value = '';
+            document.getElementById('hist-recom').value = '';
+            document.getElementById('modal-history-title').innerText = "📝 Rejestracja Wykonanych Prac";
+            document.getElementById('modal-history').classList.add('active');
+        }
+
+        function quickInspection(panelId) {
+            openNewHistoryModal();
+            document.getElementById('hist-panel').value = panelId;
+            document.getElementById('hist-type').value = 'Przegląd';
+            document.getElementById('modal-history-title').innerText = '✅ Rejestracja Przeglądu dla ' + panelId;
+        }
+
+        function executeInspectionForSelected() {
+            var selectedId = document.getElementById('techcard-select').value;
+            quickInspection(selectedId);
+        }
+
+        function saveHistoryRecord() {
+            var date = (document.getElementById('hist-date').value || "").replace("T", " ");
+            var panelId = document.getElementById('hist-panel').value;
+            var type = document.getElementById('hist-type').value;
+            var contractorType = document.getElementById('hist-contractor').value;
+            var contractor = contractorType;
+            if (contractorType === 'Zakładowa Straż Pożarna') {
+                var person = document.getElementById('hist-zsp-person').value.trim();
+                contractor = person ? 'ZSP: ' + person : 'Zakładowa Straż Pożarna';
+            }
+            var protocolNo = document.getElementById('hist-protocol').value;
+            var result = document.getElementById('hist-result').value;
+            var desc = document.getElementById('hist-desc').value;
+            var recom = document.getElementById('hist-recom').value;
+
+            if (!date || !panelId || !protocolNo || !desc) {
+                alert("Wypełnij wymagane pola!");
+                return;
+            }
+
+            var newRecord = {
+                id: 'HIST-' + (500 + db.history.length + 1),
+                date: date,
+                panelId: panelId,
+                type: type,
+                contractor: contractor,
+                protocolNo: protocolNo,
+                result: result,
+                desc: desc,
+                recom: recom
+            };
+
+            db.history.push(newRecord);
+
+            if (type === 'Przegląd') {
+                var panel = db.panels.find(function(p) { return p.id === panelId; });
+                if (panel) {
+                    panel.lastInspection = date;
+                }
+            }
+
+            saveDB(); // Instant Save to disk
+            closeModal('modal-history');
+            renderDashboard();
+            renderRegister();
+            renderHistory();
+            renderTechCard();
+            alert("Wpis w dzienniku prac zarejestrowany!");
+        }
+
+        function openPanelEditModal(panelId) {
+            var panel = db.panels.find(function(p) { return p.id === panelId; });
+            if (!panel) return;
+
+            document.getElementById('edit-panel-id').value = panel.id;
+            document.getElementById('edit-panel-code').value = panel.id;
+            document.getElementById('edit-panel-model').value = panel.model;
+            document.getElementById('edit-panel-loc').value = panel.location;
+            document.getElementById('edit-panel-spot').value = panel.spot;
+            document.getElementById('edit-panel-sn').value = panel.serialNo;
+            document.getElementById('edit-panel-interval').value = panel.intervalMonths;
+            document.getElementById('edit-panel-lastdate').value = panel.lastInspection ? panel.lastInspection.replace(" ", "T") : new Date().toISOString().substring(0, 16);
+            document.getElementById('edit-panel-condition').value = panel.condition;
+
+            document.getElementById('modal-panel-edit').classList.add('active');
+        }
+
+        function editSelectedPanel() {
+            var selectedId = document.getElementById('techcard-select').value;
+            openPanelEditModal(selectedId);
+        }
+
+        function savePanelEdit() {
+            var id = document.getElementById('edit-panel-id').value;
+            var panel = db.panels.find(function(p) { return p.id === id; });
+            if (!panel) return;
+
+            panel.model = document.getElementById('edit-panel-model').value;
+            panel.location = document.getElementById('edit-panel-loc').value;
+            panel.spot = document.getElementById('edit-panel-spot').value;
+            panel.serialNo = document.getElementById('edit-panel-sn').value;
+            panel.intervalMonths = parseInt(document.getElementById('edit-panel-interval').value);
+            panel.lastInspection = (document.getElementById('edit-panel-lastdate').value || "").replace("T", " ");
+            panel.condition = document.getElementById('edit-panel-condition').value;
+
+            saveDB(); // Instant Save to disk
+            closeModal('modal-panel-edit');
+            renderDashboard();
+            renderRegister();
+            renderTechCard();
+            populateDropdowns();
+            alert("Dane centrali zostały zaktualizowane!");
+        }
+
+        // ==========================================
+        // CUSTOM OFFLINE CALENDAR POPUP SYSTEM
+        // ==========================================
+        var currentCalTargetId = null;
+        var calYear = 2026;
+        var calMonth = 3;
+
+        function openOfflineCal(targetInputId) {
+            currentCalTargetId = targetInputId;
+            var input = document.getElementById(targetInputId);
+            var rect = input.getBoundingClientRect();
+            
+            var calPopup = document.getElementById('offline-calendar');
+            calPopup.style.top = (window.scrollY + rect.bottom + 4) + 'px';
+            calPopup.style.left = (window.scrollX + rect.left) + 'px';
+            calPopup.style.display = 'block';
+
+            if (input.value) {
+                var parts = input.value.split('-');
+                if (parts.length === 3) {
+                    calYear = parseInt(parts[0]);
+                    calMonth = parseInt(parts[1]) - 1;
+                }
+            } else {
+                var now = new Date();
+                calYear = now.getFullYear();
+                calMonth = now.getMonth();
+            }
+
+            renderOfflineCal();
+        }
+
+        function changeCalMonth(delta) {
+            calMonth += delta;
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            renderOfflineCal();
+        }
+
+        function selectCalToday() {
+            var now = new Date();
+            var yyyy = now.getFullYear();
+            var mm = String(now.getMonth() + 1).padStart(2, '0');
+            var dd = String(now.getDate()).padStart(2, '0');
+            if (currentCalTargetId) {
+                var input = document.getElementById(currentCalTargetId);
+                input.value = yyyy + '-' + mm + '-' + dd;
+            }
+            document.getElementById('offline-calendar').style.display = 'none';
+        }
+
+        function selectCalDate(day) {
+            var mm = String(calMonth + 1).padStart(2, '0');
+            var dd = String(day).padStart(2, '0');
+            if (currentCalTargetId) {
+                var input = document.getElementById(currentCalTargetId);
+                input.value = calYear + '-' + mm + '-' + dd;
+            }
+            document.getElementById('offline-calendar').style.display = 'none';
+        }
+
+        function renderOfflineCal() {
+            var monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+            document.getElementById('cal-month-year-label').innerText = monthNames[calMonth] + ' ' + calYear;
+
+            var container = document.getElementById('cal-days-container');
+            container.innerHTML = '';
+
+            var firstDayIndex = new Date(calYear, calMonth, 1).getDay();
+            var adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            var totalDays = new Date(calYear, calMonth + 1, 0).getDate();
+
+            for (var i = 0; i < adjustedFirstDay; i++) {
+                container.innerHTML += '<div></div>';
+            }
+
+            var today = new Date();
+            for (var d = 1; d <= totalDays; d++) {
+                var isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === d;
+                container.innerHTML += '<div class="cal-day ' + (isToday ? 'today' : '') + '" onclick="selectCalDate(' + d + ')">' + d + '</div>';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('click', function(e) {
+            var cal = document.getElementById('offline-calendar');
+            if (cal && !cal.contains(e.target) && !e.target.classList.contains('btn-cal')) {
+                cal.style.display = 'none';
+            }
+        });
+
+        function toggleContractorInput(prefix) {
+            var sel = document.getElementById(prefix + '-contractor');
+            var group = document.getElementById(prefix + '-zsp-group');
+            if (sel && group) {
+                if (sel.value === 'Zakładowa Straż Pożarna') {
+                    group.style.display = 'flex';
+                } else {
+                    group.style.display = 'none';
+                }
+            }
+        }
+
+        window.onload = initApp;
+</script>
+</body>
+</html>

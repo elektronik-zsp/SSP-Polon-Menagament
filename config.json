@@ -1,0 +1,5 @@
+{
+  "port": 8765,
+  "database": "db_polon_ssp.json",
+  "open_browser": true
+}
