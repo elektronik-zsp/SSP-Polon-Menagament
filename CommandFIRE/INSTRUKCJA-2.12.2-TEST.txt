@@ -1,0 +1,14 @@
+CommandFIRE SSP Serwis 2.12.2 TEST Portable Windows x64
+
+Dodano cryptography 50.0.2 (cp311 abi3 win_amd64) oraz cffi 2.1.1 (cp313 win_amd64) do runtime Python 3.13.
+Nie jest wymagany systemowy Python ani pip.
+
+1. Wypakuj caly folder SSP-Polon na lokalny dysk Windows x64.
+2. Uruchom Sprawdz_kryptografie.bat i oczekuj AES-GCM OK; cffi OK.
+3. Zrob osobna kopie istniejacego JSON i konfiguracji. Zamknij program na wszystkich stanowiskach.
+4. Dopiero po pozytywnym tescie uruchom Migracja_CFDB.bat.
+5. Zapisz klucz odzyskiwania w bezpiecznym miejscu.
+6. Przetestuj odczyt, zapis, backup i dostep z drugiego stanowiska na kopii danych.
+
+UWAGA: Pakiet przygotowany poza Windows. Nie przeprowadzono testu uruchomienia natywnych bibliotek DLL/PYD na Windows ani testow SMB/DPAPI. To wersja TEST, nie produkcyjna.
+UWAGA: Migrator przechowuje cfdb-key.dpapi w folderze programu. Folder programu powinien byc lokalny dla kazdego stanowiska, nie na wspolnym udziale.

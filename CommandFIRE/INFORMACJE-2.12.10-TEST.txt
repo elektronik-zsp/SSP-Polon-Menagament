@@ -1,0 +1,44 @@
+CommandFIRE SSP Serwis 2.12.10-TEST — przegląd i poprawki
+
+AKTUALIZACJA ISTNIEJĄCEJ INSTALACJI
+1. Zamknij program i zatrzymaj jego serwer na aktualizowanym stanowisku.
+2. Wykonaj kopię całego dotychczasowego folderu programu.
+3. Rozpakuj paczkę Aktualizacja i skopiuj zawartość folderu SSP-Polon do
+   istniejącego folderu programu, zatwierdzając podmianę plików aplikacji.
+4. Zachowaj własne config.json, bazę, cfdb-key.dpapi i folder runtime.
+   Paczka aktualizacyjna nie zawiera tych plików i ich nie nadpisuje.
+5. Uruchom program dotychczasowym skrótem. Nie uruchamiaj konfiguratora
+   nowej bazy dla już skonfigurowanego stanowiska.
+
+Pełna paczka Portable zawiera dotychczasowy runtime Windows. Nie wymaga
+instalacji Pythona ani uprawnień administratora do instalacji środowiska.
+Pierwsze uruchomienie nowej instalacji wymaga konfiguracji dostępu do bazy.
+Klucz DPAPI jest związany z kontem Windows; kopiowanie go na inne konto
+nie zastępuje konfiguracji stanowiska kluczem odzyskiwania.
+
+POPRAWKI
+- Pierwszy administrator: prawidłowy odczyt i zapis JSON oraz CFDB;
+  kopia bazy przed dodaniem konta zachowuje oryginalne szyfrowanie.
+- Konfigurator: weryfikacja konfiguracji i zabezpieczenie klucza przed
+  zapisaniem nowej zaszyfrowanej bazy. Błąd zapisu pozostawia lokalny klucz
+  potrzebny do odzyskania; nie kasuj go ani nie twórz nowej bazy w ciemno.
+- Poprawne typy wskaźników przy zwalnianiu pamięci Windows DPAPI.
+- Edycja zgłoszenia z protokołem źródłowym działa również, gdy użytkownik
+  nie ma prawa podglądu protokołów; pełna baza nadal sprawdza powiązania.
+- Blokowanie ponownego wysłania formularza także przy zapisie konta
+  i odczycie załączników. Po błędzie zachowywane są blokady pól uprawnień.
+- Formularze: nieruchomy nagłówek i przyciski, przewijana treść, sekcje,
+  oznaczenia pól wymaganych, czytelny błąd zapisu, układ na wąskim ekranie.
+- Wpis serwisowy: osobno przebieg prac i rozwiązanie; zakończenie wymaga
+  przyczyny, sposobu usunięcia i sprawdzenia już przed wysłaniem formularza.
+- Paczka zawiera również skrypty PowerShell wymagane przez konfigurator.
+
+SPRAWDZENIE
+39 testów Python oraz dotychczasowe testy JavaScript: pozytywne.
+Chromium: zgłoszenie, oczekiwanie na części, wpis drugiego wykonawcy,
+walidacja zakończenia, zapis historii i układ 390 px: pozytywne.
+Testy wykonano na danych syntetycznych w Linux. DPAPI testowano przez
+symulację odpowiedzi Windows; uruchomienie na Windows domenowym i na
+rzeczywistym udziale sieciowym wymaga sprawdzenia na stanowisku docelowym.
+Nie testowano prywatnej bazy użytkownika i nie zmieniano jej schematu.
+Szczegóły analizy: docs/PRZEGLAD-2.12.10.md.

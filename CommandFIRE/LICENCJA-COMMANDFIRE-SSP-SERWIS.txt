@@ -1,0 +1,30 @@
+COMMANDFIRE SSP SERWIS — INFORMACJA O PRAWACH AUTORSKICH I LICENCJI
+Wersja 1.0, 20 października 2026 r.
+
+© 2026 Arkadiusz Bartula. Wszelkie prawa zastrzeżone.
+ELEKTRONIK – Arkadiusz Bartula, NIP: 549-226-34-51
+Upoważniony użytkownik: Zakładowa Straż Pożarna Synthos.
+
+1. Uprawniony i oznaczenie utworu
+Oprogramowanie CommandFIRE SSP Serwis, w tym autorskie elementy kodu źródłowego, interfejsu, dokumentacji i struktury aplikacji, jest oznaczone: © 2026 Arkadiusz Bartula. Wszelkie prawa zastrzeżone. Autorem i podmiotem wskazanym jako uprawniony do udzielania niniejszej licencji jest Arkadiusz Bartula, prowadzący działalność ELEKTRONIK – Arkadiusz Bartula, NIP: 549-226-34-51. Zastrzeżenie dotyczy oryginalnych elementów aplikacji, z poszanowaniem praw osób trzecich oraz uprawnień wynikających z odrębnych umów lub obowiązujących przepisów.
+
+2. Dozwolone użytkowanie przez ZSP Synthos
+Autor udziela Zakładowej Straży Pożarnej Synthos, jako wskazanej jednostce organizacyjnej i jej upoważnionym pracownikom, nieodpłatnego, niewyłącznego, nieprzenoszalnego upoważnienia do wewnętrznego używania oprogramowania w związku z działalnością tej jednostki na terytorium Rzeczypospolitej Polskiej. Upoważnienie nie oznacza nabycia programu, jego kodu źródłowego ani przeniesienia autorskich praw majątkowych na spółki z grupy Synthos lub osoby trzecie.
+
+3. Wyraźnie dopuszczone sposoby korzystania
+Uprawnienie obejmuje: (a) instalowanie i uruchamianie kopii programu na komputerach służbowych upoważnionych użytkowników ZSP Synthos; (b) zwielokrotnianie i przechowywanie kopii programu w zakresie technicznie niezbędnym do jego wewnętrznego użytkowania; (c) korzystanie z programu i prowadzenie ewidencji central SSP, zgłoszeń, przeglądów i protokołów; (d) przechowywanie wspólnej bazy na wewnętrznym udziale sieciowym oraz tworzenie i przywracanie kopii bezpieczeństwa; (e) instalowanie aktualizacji dostarczonych lub zaakceptowanych przez uprawnionego. Upoważnienie obejmuje wyłącznie powyższe pola eksploatacji i czynności w zakresie potrzeb wewnętrznych jednostki.
+
+4. Ograniczenia
+Bez odrębnej zgody na piśmie uprawnionego zabrania się: sprzedaży i odpłatnego udostępniania oprogramowania; publikowania lub przekazywania kodu źródłowego, programu lub jego kopii podmiotom trzecim; udzielania dalszych licencji; wykorzystywania programu na potrzeby innych jednostek organizacyjnych lub działalności komercyjnej poza ZSP Synthos; usuwania informacji o autorze i warunkach licencji; tworzenia i dystrybucji zmodyfikowanych wersji wykraczających poza czynności dozwolone bezwzględnie obowiązującym prawem. Ograniczenia te nie naruszają uprawnień, których ustawa nie pozwala wyłączyć.
+
+5. Czas trwania i zasięg
+Licencja jest udzielana na czas nieoznaczony na terytorium Rzeczypospolitej Polskiej, z uwzględnieniem właściwych przepisów dotyczących czasu trwania, wypowiedzenia i zakończenia licencji. Wszelkie rozszerzenie zakresu wykorzystania wymaga odrębnego uzgodnienia z uprawnionym.
+
+6. Dane i prawa osób trzecich
+Dane eksploatacyjne wprowadzane przez użytkowników do aplikacji nie stają się z tego powodu własnością autora programu. Nazwy i znaki towarowe POLON oraz Synthos pozostają własnością ich uprawnionych podmiotów. Ewentualne komponenty osób trzecich zachowują właściwe sobie warunki licencyjne. Oznaczenie autorstwa aplikacji nie stanowi roszczenia do tych znaków ani komponentów.
+
+7. Kontakt w sprawach licencyjnych
+ELEKTRONIK – Arkadiusz Bartula; NIP: 549-226-34-51; e-mail: akradiusz.bartula@gmail.com; telefon: +48 531 531 622.
+
+8. Postanowienia końcowe
+Niniejszy tekst określa zakres zgody autora na użytkowanie oprogramowania przez ZSP Synthos. Nie zastępuje uzgodnień, do których uprawniony jest inny podmiot na mocy umowy lub ustawy, ani indywidualnej analizy prawnej. W razie rozbieżności z bezwzględnie obowiązującym prawem pierwszeństwo ma prawo.

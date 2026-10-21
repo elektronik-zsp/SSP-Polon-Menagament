@@ -1,0 +1,8 @@
+CommandFIRE 2.12.3 TEST Portable
+Poprawka importu: JSON oraz CFDB (odszyfrowanie po stronie serwera).
+Przed aktualizacja wykonaj kopie bazy i klucza odzyskiwania.
+Zamknij program na wszystkich stanowiskach.
+Nie nadpisuj config.json, cfdb-key.dpapi ani aktualnej bazy.
+Import CFDB wymaga tego samego klucza szyfrowania co aktualna baza.
+Import podmienia dane robocze, zachowuje konta i konfiguracje.
+Testy skladni Python i JavaScript: OK. Windows/SMB: nieprzetestowane dla tej poprawki.

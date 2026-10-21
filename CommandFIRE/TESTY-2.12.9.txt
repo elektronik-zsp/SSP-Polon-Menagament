@@ -1,0 +1,11 @@
+CommandFIRE 2.12.9 TEST: narzedzie diagnostyczne (bez modyfikowania bazy).
+
+1. Zachowaj kopie bazy i klucza odzyskiwania.
+2. Na kazdym stanowisku uruchom Diagnostyka_CFDB.bat.
+3. Na drugim komputerze uruchom Konfigurator_CFDB.vbs -> dolacz do istniejacej bazy; podaj klucz odzyskiwania tylko lokalnie.
+4. Porownaj SHA256 i podsumowania.
+5. Dopiero potem testuj dodanie testowego zgloszenia na stanowisku A i odczyt na B.
+6. Test blokady: edytuj ten sam rekord na obu stanowiskach, sprawdz ostrzezenie o konflikcie.
+7. Test przywracania przeprowadzaj w osobnej kopii testowej, nigdy na bazie produkcyjnej.
+
+Nie udostepniaj plikow DPAPI i klucza odzyskiwania. Testow Windows/SMB nie przeprowadzono w srodowisku budowania.

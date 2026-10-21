@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CommandFIRE SSP Serwis</title><link rel="icon" type="image/png" sizes="512x512" href="/favicon.png?v=253"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=253"><link rel="stylesheet" href="/style.css?v=21210"><script src="/app.js?v=21210" defer></script></head>
+<body class="login-mode">
+<section id="auth-gate" class="auth-gate"><div class="auth-card">
+ <img src="/favicon.png" alt="CommandFIRE SSP Serwis" width="76" height="76">
+ <h1 id="auth-title">Zaloguj się do CommandFIRE SSP Serwis</h1>
+ <p>System obsługi central sygnalizacji pożarowej</p>
+ <form id="auth-form" autocomplete="on">
+   <div id="auth-login-fields"><label>Login<input id="auth-username" name="username" required autocomplete="username"></label>
+     <label>Hasło<input id="auth-password" type="password" name="password" required autocomplete="current-password"></label></div>
+   <div id="auth-change-fields" hidden><label>Hasło tymczasowe<input id="auth-old" type="password" autocomplete="current-password"></label>
+     <label>Nowe hasło (minimum 12 znaków)<input id="auth-new" type="password" minlength="12" autocomplete="new-password"></label>
+     <label>Powtórz nowe hasło<input id="auth-repeat" type="password" minlength="12" autocomplete="new-password"></label></div>
+   <div id="auth-error" class="error" role="alert"></div>
+   <button type="submit" class="primary">Zatwierdź</button>
+ </form>
+ <p class="auth-legal">© 2026 Arkadiusz Bartula · ELEKTRONIK<br>
+ Licencja na użytkowanie wewnętrzne dla ZSP Synthos · <a href="/licencja" target="_blank" rel="noopener">Warunki licencji</a></p>
+ </div></section>
+<header class="app-header">
+  <div class="brand-wrap">
+    <div class="brand-emblem"><img class="brand-icon" src="/favicon.png?v=21210" width="48" height="48" alt=""></div>
+    <div class="brand-copy">
+      <div class="brand">Command<span>FIRE</span> <span class="brand-ssp">SSP</span> <span class="brand-edition">Serwis</span></div>
+      <div id="site-label" class="brand-subtitle">Obsługa i utrzymanie systemów sygnalizacji pożarowej</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <div id="sync-indicator" class="sync-indicator" data-state="pending" role="status" aria-live="polite" title="Stan połączenia ze wspólną bazą danych">
+      <span class="sync-light" aria-hidden="true"></span>
+      <span id="sync-status-text">Sprawdzanie…</span>
+    </div>
+    <div class="header-notifications">
+      <button type="button" class="header-notify" id="sync-alert-button" data-action="show-alerts" aria-expanded="false" aria-controls="sync-feed" aria-label="Powiadomienia o zmianach" title="Powiadomienia o zmianach">
+        <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <span class="sync-button-label">Powiadomienia</span>
+        <span id="sync-count" class="sync-count" hidden>0</span>
+      </button>
+      <section id="sync-feed" class="sync-feed" aria-label="Ostatnie powiadomienia" hidden></section>
+    </div>
+    <div id="session-user" class="session-user" aria-label="Aktualnie zalogowany użytkownik" title="Zalogowany użytkownik">
+      <span id="user-avatar" class="user-avatar" aria-hidden="true">U</span>
+      <span class="user-details">
+        <span class="user-caption">Zalogowany użytkownik</span>
+        <strong id="user-label" class="user-label">Użytkownik</strong>
+        <span id="user-role" class="user-role">Rola</span>
+      </span>
+    </div>
+    <button type="button" class="header-logout" data-action="logout" title="Wyloguj z programu">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span>Wyloguj</span>
+    </button>
+  </div>
+</header>
+<div id="sync-toast-stack" class="sync-toast-stack" aria-live="polite" aria-atomic="false"></div>
+<div class="layout"><aside><nav id="navigation" aria-label="Nawigacja główna"></nav><div class="sidebar-note">Program działa lokalnie, baza może być na udziale sieciowym.<br>Edycja jednego rekordu jest zastrzeżona przez 30 minut bezczynności.</div></aside><main><div id="notification" role="status" aria-live="polite"></div><div id="content"><p>Otwieranie bazy danych…</p></div></main></div>
+<footer class="app-footer">
+ <div id="storage-status" class="storage-status">Łączenie z plikiem bazy…</div>
+ <div class="copyright-notice">
+  <span><strong>© 2026 Arkadiusz Bartula. Wszelkie prawa zastrzeżone.</strong> · ELEKTRONIK – Arkadiusz Bartula · NIP: 549-226-34-51</span>
+  <span>Licencja na użytkowanie dla Zakładowej Straży Pożarnej Synthos · <a href="/licencja" target="_blank" rel="noopener">Informacje o licencji i prawach autorskich</a></span>
+  <span>Kontakt: <a href="mailto:akradiusz.bartula@gmail.com">akradiusz.bartula@gmail.com</a> · <a href="tel:+48531531622">+48 531 531 622</a></span>
+ </div>
+</footer>
+<dialog id="editor" aria-labelledby="editor-title"><form id="editor-form"><div class="dialog-heading"><h2 id="editor-title"></h2><button type="button" data-action="close-modal" aria-label="Zamknij">×</button></div><div id="editor-fields"></div><div id="form-error" class="error" role="alert" tabindex="-1"></div><div id="editor-actions" class="dialog-actions"></div></form></dialog>
+<input id="import-file" type="file" accept=".json,.cfdb,application/json,application/octet-stream" hidden>
+<section id="print-area" aria-label="Protokół do druku"></section>
+</body></html>

@@ -1,0 +1,26 @@
+﻿CommandFIRE SSP Serwis 2.11.1 — PORTABLE Windows 10/11 x64
+
+1. Wypakuj cały folder SSP-Polon do lokalnego folderu z prawem zapisu.
+2. Uruchom Uruchom.bat, a w menedżerze kliknij Uruchom.
+   Pierwszy start utworzy pustą bazę i konfigurację.
+3. Uruchom Utworz_pierwszego_admina.bat i utwórz własne konto.
+4. Zaloguj się w przeglądarce: http://127.0.0.1:8765
+5. Kończ pracę przyciskiem Zatrzymaj w menedżerze.
+
+Nie wymaga instalacji Pythona ani pobierania pakietów.
+Paczka nie zawiera kont, haseł ani danych użytkownika.
+Baza danych i konfiguracja powstają przy pierwszym uruchomieniu.
+Dla pracy wielostanowiskowej użyj Konfiguruj_wspolna_baze.bat.
+Nie uruchamiaj programu bezpośrednio z archiwum ZIP.
+
+Runtime: oficjalny CPython 3.13.7 embedded x64 (python.org).
+Licencja Pythona znajduje się w runtime/LICENSE.txt.
+
+AKTUALIZACJA ISTNIEJACEGO PROGRAMU
+Zatrzymaj program na wszystkich stanowiskach. Uruchom Aktualizuj.bat
+z glownego folderu paczki i wskaz dotychczasowy folder SSP-Polon.
+Aktualizator wykona sprawdzona kopie programu, konfiguracji i bazy,
+a nastepnie podmieni pliki programu. Nie nadpisuje danych ani kont.
+Nie kopiuj czystej bazy do uzywanej instalacji.
+Po pierwszym zapisie w 2.11.1 baza ma schemat 8. Zaktualizuj wszystkie stanowiska.
+Powrot do starszej wersji wymaga przywrocenia odpowiedniej kopii danych.

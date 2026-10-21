@@ -1,0 +1,13 @@
+CommandFIRE SSP Serwis 2.12.4 TEST - konfigurator CFDB (Windows x64)
+
+1. Rozpakuj program na dysku LOKALNYM kazdego stanowiska. Nie uruchamiaj plikow .vbs z udzialu sieciowego.
+2. Pierwsze uruchomienie przez CommandFIRE_SSP_Serwis.vbs otwiera Konfigurator_CFDB.vbs, jezeli nie istnieje config.json.
+3. W konfiguratorze wybierz: 1 nowa baza CFDB, 2 dolaczenie do istniejacej CFDB, 3 migracja JSON do CFDB.
+4. Dla dolaczenia wpisz sciezke UNC wspolnej bazy i 64-znakowy klucz odzyskiwania. Klucz jest wpisywany w zwyklym oknie InputBox (widoczny na ekranie); zachowaj prywatnosc.
+5. Po utworzeniu nowej bazy ZAPISZ klucz odzyskiwania. Klucz DPAPI jest powiazany z kontem Windows, na ktorym konfigurujesz stanowisko.
+6. Nie kopiuj cfdb-key.dpapi pomiedzy komputerami ani kontami Windows. Dodaj kazde stanowisko osobno.
+7. Import w aplikacji: administrator moze wybrac JSON lub CFDB zaszyfrowany TYM SAMYM kluczem co baza aktywna. Import CFDB z innym kluczem nie jest jeszcze obslugiwany.
+8. Przed importem wykonaj kopie bazy. Zatwierdzenie importu zastapi dane robocze (konta i konfiguracja aktywnej instalacji pozostaja zachowane).
+9. Nie nadpisuj dzialajacego katalogu. Testuj na osobnej kopii programu i bazy.
+
+UWAGA: Ta wersja NIE zostala przetestowana na Windows/SMB. Potwierdzenie uruchomienia bibliotek kryptograficznych w wersji 2.12.2 nie oznacza potwierdzenia dzialania nowego konfiguratora.

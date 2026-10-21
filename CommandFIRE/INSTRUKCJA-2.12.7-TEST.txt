@@ -1,0 +1,5 @@
+CommandFIRE 2.12.7 TEST — korekta przekazywania hasla kreatora.
+Uruchom w NOWYM katalogu Konfigurator_CFDB.vbs.
+Nie nadpisuj aktywnej bazy CFDB ani klucza DPAPI.
+Jesli blad wystapi ponownie, podaj dokladny komunikat bez hasla.
+Testy Windows wymagane przed wdrozeniem.
