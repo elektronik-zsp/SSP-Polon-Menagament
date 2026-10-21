@@ -1,12 +1,15 @@
-# CommandFIRE SSP Serwis — aktualizacja 2.12.10-TEST
+# CommandFIRE SSP Serwis — aktualizacja 2.12.11-TEST
 
-Przegląd i poprawki przygotowane na podstawie paczki CommandFIRE 2.12.9.
+Rozdzielenie obsługi zgłoszeń, przygotowania protokołu i zatwierdzania przez uprawnionego użytkownika. Protokół można wystawić także po zakończeniu naprawy.
 
-- [Aktualizacja istniejącej instalacji](downloads/CommandFIRE-2.12.10-TEST-Aktualizacja.zip)
-- [Pełna paczka Portable dla Windows x64](downloads/CommandFIRE-2.12.10-TEST-Portable-Windows-x64.zip)
-- [Instrukcja aktualizacji i lista zmian](CommandFIRE/INFORMACJE-2.12.10-TEST.txt)
+- [Aktualizacja istniejącej instalacji](downloads/CommandFIRE-2.12.11-TEST-Aktualizacja.zip)
+- [Pełna paczka Portable dla Windows x64](downloads/CommandFIRE-2.12.11-TEST-Portable-Windows-x64.zip)
+- [Instrukcja aktualizacji i lista zmian](CommandFIRE/INFORMACJE-2.12.11-TEST.txt)
 - [Analiza kodu i wyniki testów](CommandFIRE/docs/PRZEGLAD-2.12.10.md)
+- [Schemat procesu i uprawnienia](CommandFIRE/docs/PROCES-SERWISOWY-2.12.11.md)
 - [Kod aktualnej wersji](CommandFIRE/)
+
+**Uprawnienia:** istniejące konta zachowują przyznane prawa. Administrator powinien odebrać zatwierdzanie osobom przygotowującym wyłącznie szkice. Nowe konta SERWISANT domyślnie nie otrzymują tego prawa.
 
 Zachowaj własną bazę, config.json i cfdb-key.dpapi. Paczka aktualizacyjna nie
 zawiera plików użytkownika ani runtime. Wykonaj kopię folderu przed podmianą.

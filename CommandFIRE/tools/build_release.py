@@ -11,10 +11,16 @@ def selected():
         if p.suffix.lower() not in ('.py','.js','.cjs','.html','.css','.md','.txt','.bat','.vbs','.svg','.ico','.png','.ps1'):continue
         yield p
 if __name__=='__main__':
-    output=ROOT.parent/'CommandFIRE-2.12.10-TEST-Portable-Windows-x64.zip'
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--runtime',type=Path,default=ROOT/'runtime')
+    parser.add_argument('--output',type=Path,default=ROOT.parent/'CommandFIRE-2.12.11-TEST-Portable-Windows-x64.zip')
+    args=parser.parse_args()
+    if not (args.runtime/'python.exe').is_file():parser.error('Brak runtime Windows z python.exe.')
+    output=args.output
     with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as z:
         for p in sorted(selected()):z.write(p,'SSP-Polon/'+p.relative_to(ROOT).as_posix())
-        for p in sorted((ROOT/'runtime').rglob('*')):
-            if p.is_file() and '__pycache__' not in p.parts:z.write(p,'SSP-Polon/'+p.relative_to(ROOT).as_posix())
+        for p in sorted(args.runtime.rglob('*')):
+            if p.is_file() and '__pycache__' not in p.parts:z.write(p,'SSP-Polon/runtime/'+p.relative_to(args.runtime).as_posix())
     with zipfile.ZipFile(output) as z:assert z.testzip() is None
     print(output)

@@ -1,0 +1,24 @@
+CommandFIRE SSP Serwis 2.12.11-TEST
+
+Zgłoszenie i protokół mają niezależne stany. Po zakończeniu zgłoszenia
+można wystawić protokół naprawy. Serwisant zapisuje szkic, a osoba z prawem
+zatwierdzania otwiera podgląd dokumentu i zatwierdza go osobnym przyciskiem.
+Zatwierdzający może mieć to uprawnienie bez prawa edycji treści.
+
+WAŻNE: istniejące konta zachowują wcześniejsze uprawnienia. Administrator
+powinien w Użytkownicy -> Edytuj odznaczyć „Zatwierdzanie protokołów
+ i przeglądów” tym osobom, które mają wyłącznie przygotowywać szkice.
+Nowe konta SERWISANT domyślnie nie otrzymują już prawa zatwierdzania.
+
+Pełny schemat procesu: docs/PROCES-SERWISOWY-2.12.11.md.
+
+Aktualizacja: zatrzymaj program na aktualizowanych stanowiskach, wykonaj
+kopię folderu aplikacji i bazy. Skopiuj zawartość folderu SSP-Polon z paczki
+aktualizacji do dotychczasowego folderu aplikacji. Zachowaj config.json,
+bazę, cfdb-key.dpapi i runtime — nie ma ich w paczce aktualizacyjnej.
+Uruchom dotychczasowym skrótem. Zaktualizuj wszystkie stanowiska,
+aby korzystały ze spójnych reguł uprawnień i zatwierdzania.
+Nie konfiguruj nowej bazy dla istniejącej instalacji.
+
+Sprawdzenie: 47 testów Python, testy JavaScript oraz scenariusz Chromium
+z serwisantem i zatwierdzającym. Testy na Linux, bez prywatnej bazy.

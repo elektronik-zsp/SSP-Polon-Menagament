@@ -1,0 +1,2 @@
+65eb95a38d9012d970f005cd8d539d41da9c46bf0be3e978de46abdc9d61c533  CommandFIRE-2.12.11-TEST-Aktualizacja.zip
+dc07894dc00e08683bb531fb443968ff62accf7b7f9f7494575ac3c422a9f9f6  CommandFIRE-2.12.11-TEST-Portable-Windows-x64.zip

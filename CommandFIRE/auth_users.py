@@ -30,7 +30,7 @@ PERMISSIONS = {
 ROLE_DEFAULTS = {
     'ADMIN': list(PERMISSIONS),
     'SERWISANT': ['dashboard.view', 'panels.view', 'faults.view', 'faults.edit',
-                  'protocols.view', 'protocols.edit', 'protocols.finalize', 'settings.view'],
+                  'protocols.view', 'protocols.edit', 'settings.view'],
     'DYSPOZYTOR': ['dashboard.view', 'panels.view', 'faults.view', 'faults.edit',
                    'protocols.view', 'settings.view'],
     'ODCZYT': ['dashboard.view', 'panels.view', 'faults.view',

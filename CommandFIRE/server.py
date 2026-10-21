@@ -27,7 +27,7 @@ from auth_users import (PERMISSIONS, ROLE_DEFAULTS, LoginSessions, active_admins
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 ROOT = Path(__file__).resolve().parent
-VERSION = '2.12.10-TEST'
+VERSION = '2.12.11-TEST'
 DEFAULT_SERVICE = {
     'company': '', 'address': '', 'taxId': '', 'phone': '', 'email': '',
     'site': '', 'siteAddress': '', 'technicians': [], 'protocolPrefix': 'SSP',
@@ -626,11 +626,16 @@ def apply_workflow(data, old, service, replace=False, actor=None):
     used = {h['protocolNo'] for h in data['history'] if h.get('protocolNo')}
     for row in data['history']:
         before = previous.get(row['id'])
+        if not replace and row != before and row.get('faultId'):
+            linked = faults.get(row['faultId'])
+            require(linked is not None and linked['panelId'] == row['panelId'], 'Protokół i zgłoszenie muszą dotyczyć tej samej centrali.')
         newly_final = row['protocolStatus'] == 'final' and (not before or before['protocolStatus'] != 'final')
         if not newly_final or replace:
             continue
         panel = panels.get(row['panelId'])
-        require(panel is not None and not panel['archived'], 'Wybierz aktywną centralę.')
+        linked = faults.get(row.get('faultId'))
+        historical = bool(linked and linked['status'] == 'Zakończone' and row['type'] != 'Przegląd')
+        require(panel is not None and (not panel['archived'] or historical), 'Archiwalna centrala: można udokumentować zakończoną naprawę; nowe prace wymagają przywrócenia centrali.')
         require(row['date'] and row['desc'].strip() and row.get('technician', '').strip(), 'Uzupełnij datę, opis i wykonawcę.')
         require(row['result'] in ('Pozytywny', 'Negatywny', 'Warunkowy'), 'Wybierz wynik prac.')
         checks = row.get('checklist', [])
@@ -650,6 +655,8 @@ def apply_workflow(data, old, service, replace=False, actor=None):
             row['inspectionNo'] = next_document_number(data['history'], 'inspectionNo', service, 'inspection', row['date'])
         used.add(row['protocolNo'])
         row['finalizedAt'] = now
+        row['finalizedBy'] = actor['displayName'] if actor else 'System'
+        row['finalizedById'] = actor['id'] if actor else ''
         row['panelSnapshot'] = deepcopy({k: v for k, v in panel.items() if k not in ('documents', 'elements')})
         row['serviceSnapshot'] = deepcopy(service)
         row['contractor'] = row['technician']
@@ -662,22 +669,24 @@ def apply_workflow(data, old, service, replace=False, actor=None):
                                + ' (wynik: ' + row['result'] + ').')
         if row['type'] == 'Przegląd' and row['result'] == 'Pozytywny':
             panel['lastInspection'] = max(panel['lastInspection'], row['date'])
-        if row['result'] != 'Pozytywny':
+        if row['result'] != 'Pozytywny' and not panel['archived']:
             panel['condition'] = 'Wymaga serwisu'
         fault = faults.get(row.get('faultId')) if row.get('faultId') else None
         if row.get('faultId'):
             require(fault is not None and fault['panelId'] == row['panelId'], 'Nieprawidłowe powiązanie zgłoszenia.')
+        closes_now = bool(row.get('closeFault') and fault and fault['status'] != 'Zakończone')
         if row.get('closeFault'):
             require(row['result'] == 'Pozytywny', 'Zgłoszenie można zamknąć tylko po pozytywnym wyniku.')
             require(fault is not None, 'Wybierz zgłoszenie do zakończenia.')
             require(fault['status'] != 'Anulowane', 'Anulowane zgłoszenie trzeba najpierw wznowić.')
-            fault['status'] = 'Zakończone'
-            fault['closedAt'] = now
-            fault['cause'] = fault.get('cause') or 'Według protokołu ' + row['protocolNo']
-            fault['resolution'] = row['desc']
-            fault['verification'] = 'Pozytywny wynik protokołu ' + row['protocolNo']
+            if closes_now:
+                fault['status'] = 'Zakończone'
+                fault['closedAt'] = now
+                fault['cause'] = fault.get('cause') or 'Według protokołu ' + row['protocolNo']
+                fault['resolution'] = row['desc']
+                fault['verification'] = 'Pozytywny wynik protokołu ' + row['protocolNo']
         if fault:
-            note = ('Zgłoszenie zakończone po zatwierdzeniu protokołu ' if row.get('closeFault') else 'Zatwierdzono powiązany protokół ')
+            note = ('Zgłoszenie zakończone po zatwierdzeniu protokołu ' if closes_now else 'Zatwierdzono powiązany protokół ')
             note += row['protocolNo'] + ' (wynik: ' + row['result'] + ', wykonawca: ' + row['technician'] + ').'
             event = make_activity(now, 'protocol', 'System', note,
                                   old_faults.get(fault['id'], {}).get('status', 'Nowe'), fault['status'])
@@ -965,7 +974,12 @@ def make_server(root, port, control_token=None):
                                            ('history', 'protocols.edit'), ('costs', 'protocols.edit')]:
                 before = {item['id']: item for item in old[collection]}
                 after = {item['id']: item for item in proposed[collection]}
-                if before != after and permission not in perms:
+                approval_only = (collection == 'history' and 'protocols.finalize' in perms
+                    and before.keys() == after.keys() and all(
+                        row == before[key] or (before[key].get('protocolStatus') == 'draft'
+                        and row == {**before[key], 'protocolStatus': 'final'})
+                        for key, row in after.items()))
+                if before != after and permission not in perms and not approval_only:
                     raise PermissionError('Brak uprawnienia: ' + PERMISSIONS[permission])
             old_history = {item['id']: item for item in old['history']}
             for item in proposed['history']:
@@ -1227,7 +1241,12 @@ def make_server(root, port, control_token=None):
                         if not ({'panels.edit', 'protocols.edit'} & require_permissions):
                             raise PermissionError('Brak uprawnienia do edycji centrali lub przygotowania przeglądu.')
                     else:
-                        actor = self.current_admin(data) if resource == 'import' else self.current_user(data, permission)
+                        if resource.startswith('history/'):
+                            actor = self.current_user(data)
+                            if not ({'protocols.edit', 'protocols.finalize'} & set(permissions_for(actor))):
+                                raise PermissionError('Brak uprawnienia do edycji lub zatwierdzania protokołów.')
+                        else:
+                            actor = self.current_admin(data) if resource == 'import' else self.current_user(data, permission)
                     state = sessions(data)
                     token = token_digest(payload.get('token'))
                     action = payload.get('action')
